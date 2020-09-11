@@ -1,1 +1,6 @@
-# 2020_group_06_s2895323_s3992853_s3886026
+# Web and Cloud Computing project 2020 - Period 1A
+## Group 06:
+### Group mmembers:
+#### Stefan Evanghelides - s2895323
+#### Alexandros Charisis - s3992853
+#### Ethelbert Uzodinma - 3886026

@@ -12,12 +12,13 @@ This is the main page of the Web and Cloud Computing (2020) project
 
 Stefan Evanghelides (s2895323)
 
-Alexandros Charisis ()
+Alexandros Charisis (s3992853)
 
-Etherlbert Uzodinma ()
+Etherlbert Uzodinma (s3886026)
 
 
 ### Overview
 
 (TODO) 
+
 

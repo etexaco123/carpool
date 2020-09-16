@@ -4,4 +4,6 @@ COPY ./src/ ./home/app/
 
 WORKDIR /home/app/
 
-CMD flask run
+RUN pip install flask
+
+CMD python app.py

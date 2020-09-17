@@ -1,0 +1,56 @@
+# Python compiled files
+**/__pycache__/
+**/*.py[cod]
+**/*$py.class
+
+# Python Environment
+**/.env
+**/.venv
+**/env/
+**/venv/
+**/ENV/
+**/env.bak/
+**/venv.bak/
+**/Pipfile
+**/Pipfile.lock
+
+# VScode
+**/.vscode/
+
+# Angular
+**/.DS_STORE
+**/e2e_test.*
+**/node_modules
+**/tools/gulp-tasks/cldr/cldr-data/
+
+# Include when developing application packages.
+**/.idea/
+**/.settings/
+**/*.swo
+**/modules/.settings
+**/modules/.vscode
+**/.vimrc
+**/.nvimrc
+**/.scala_dependencies
+**/.worksheet
+
+# Don't check in secret files
+**/*secret.js
+
+# Ignore npm/yarn debug log
+**/npm-debug.log
+**/yarn-error.log
+
+# build-analytics
+**/.build-analytics
+
+# rollup-test output
+**/modules/rollup-test/dist/
+
+# User specific bazel settings
+**/.bazelrc.user
+
+# Stefan specific -> funny laptop generating extra files
+**/*.ini
+
+

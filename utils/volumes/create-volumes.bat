@@ -1,3 +1,5 @@
+@echo off
+
 :: Create the volumes used in docker-compose
 docker volume create cassandra-schema
 docker volume create cassandra-data-seed

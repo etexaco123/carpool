@@ -1,5 +1,10 @@
+@echo off
+
+:: Create the network
+docker network create wacc-network
+
 :: Create the volumes
-.\utils\volumes\create-volumes.bat
+call .\utils\volumes\create-volumes.bat
 
 :: Migrate the data
-.\utils\volumes\add-data-to-all-containers.bat
+call .\utils\volumes\add-data-to-all-containers.bat

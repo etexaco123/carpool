@@ -4,6 +4,9 @@
 # It is needed to access the other script.
 MY_DIR=$(dirname $(readlink -f $0))
 
+# Create the network
+docker network create wacc-network
+
 # Create the volumes
 $MY_DIR/utils/volumes/create-volumes.sh
 

@@ -1,6 +1,16 @@
 version: "3.7"
 
 services:
+ # Assume that the server image was already built
+ server:
+  build: ./server
+  image: server:latest
+  container_name: server
+  ports:
+   - 5000:5000
+  networks:
+   - wacc
+  
  cassandra-seed:
   image: cassandra:latest
   container_name: cassandra-seed

@@ -10,6 +10,32 @@ services:
    - 5000:5000
   networks:
    - wacc
+   
+ server-npm: 
+  build: ./server-npm
+  container_name: docker-node-mongo
+  image: server-npm
+  command: "node app.js"
+  ports:
+   - 8080:8080
+  depends_on:
+   - mongo-seed
+  networks:
+   - wacc
+
+ mongo-seed:
+  container_name: mongo-seed
+  image: mongo:latest
+  environment:
+   # Dummy log in credentials
+    MONGO_INITDB_ROOT_USERNAME: root
+    MONGO_INITDB_ROOT_PASSWORD: rootpass
+  ports:
+   - 27017:27017
+  volumes:
+   - mongodb-seed-data:/data/db
+  networks:
+   - wacc
   
  cassandra-seed:
   image: cassandra:latest
@@ -145,6 +171,8 @@ volumes:
  redis-data:
   external: true
  redis-conf:
+  external: true
+ mongodb-seed-data:
   external: true
 
 networks:

@@ -14,6 +14,9 @@
 **/Pipfile
 **/Pipfile.lock
 
+# Databases: Mongo, Cassandra etc
+**/data/*
+
 # VScode
 **/.vscode/
 

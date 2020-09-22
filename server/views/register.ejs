@@ -1,0 +1,15 @@
+<%- include("partials/header") %>
+
+<%- include("partials/nav") %>
+
+<h1 class="h3 mb-3 font-weight-normal">Sign Up</h1>
+
+
+<form class="form-signin" action="/register" method="POST">
+    <input type="text" id="inputUsername" class="form-control" name="username" placeholder="username">
+    <input type="password" id="inputPassword" class="form-control" name="password" placeholder="password">
+    <button class="btn btn-lg btn-primary btn-block">Submit</button>
+    <p>© 2020 - Group6 WaCC</p>
+</form>
+
+<%- include("partials/footer") %>

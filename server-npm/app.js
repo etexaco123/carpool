@@ -71,11 +71,11 @@ app.post("/register", function(req, res){
         //in case of error throw error msg and redirect to Sign Up page
         if(err){
             console.log(err);
-            return res.render('register');
+            return res.render("register");
         }
         //log the user in, encode the data (using local strategy) and redirect to Secret page
         passport.authenticate("local")(req, res, function(){
-            res.redirect("/secret");
+            res.redirect("/login");
         });
     });
 });
@@ -96,6 +96,11 @@ app.post("/login", passport.authenticate("local", {
 app.get("/logout", function(req, res){
     req.logout();
     res.redirect("/");
+});
+
+//SEARCH ROUTE
+app.get("/search", function(req, res){
+    res.render("search");
 });
 
 function isLoggedIn(req, res, next){

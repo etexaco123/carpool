@@ -13,6 +13,16 @@ services:
    - mongo-seed
   networks:
    - wacc
+   
+ ui: 
+  build: ./ui
+  container_name: ui
+  image: ui
+  command: "node app.js"
+  ports:
+   - 5000:5000
+  networks:
+   - wacc
 
  mongo-seed:
   container_name: mongo-seed

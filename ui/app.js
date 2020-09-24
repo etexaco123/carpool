@@ -1,29 +1,16 @@
 'use strict';
 
 var express 				= require("express"),
-    mongoose 				= require("mongoose"),
-    passport 				= require("passport"),
+	https					= require('https'),
+	request					= require("request"),
     bodyParser 				= require("body-parser"),
-    User 					= require("./views/models/user"),
-    LocalStrategy 			= require("passport-local"),
-    passportLocalMongoose 	= require("passport-local-mongoose")
+    User 					= require("./views/models/user")
 
 
 // Constants
-const PORT = 8080;
+const PORT = 5000;
 const HOST = '0.0.0.0';
-var db = null;
-//Set up the connection to the db
-mongoose.connect(
-    'mongodb://mongo:27017/mongo-seed', {
-        useNewUrlParser: true,
-        useUnifiedTopology: true
-    })
-    .then(() => {
-        db = mongoose.connection;
-        console.log('Connected to DB!');
-    })
-    .catch(error => console.log(error.message));
+
 
 
 //run express
@@ -40,14 +27,12 @@ app.use(require("express-session")({
     resave: false,
     saveUninitialized: false
 }));
-//Required methods to be able to use passport mongoose plugin
-app.use(passport.initialize());
-app.use(passport.session());
-//Use passport's local strategy for user authentication
-passport.use(new LocalStrategy(User.authenticate()));
-//Use the passport's methods for encoding and decoding the data of our sessions
-passport.serializeUser(User.serializeUser());
-passport.deserializeUser(User.deserializeUser());
+
+
+// USE HTTP GET/POST REQUESTS
+
+// Connect UI to the server.
+// Communicate asynchronously.
 
 //==============
 //ROUTES
@@ -56,14 +41,6 @@ passport.deserializeUser(User.deserializeUser());
 app.get("/", function(req, res){
     res.render("home");
 });
-
-app.get("/users", (req, res) => {
-    User.find({}, (err, users) => {
-        if (err) res.status(500).send(error)
-            res.status(200).json(users);
-    });
-});
-
 
 app.get("/secret", isLoggedIn, function(req, res){
     res.render("secret");
@@ -120,6 +97,14 @@ function isLoggedIn(req, res, next){
     }
     res.redirect("/login");
 }
+
+
+// Example POST
+// Registration
+//var payload = {"username":"abc", "pass":"a234nk2j34"}
+//var resultPOST = app.POST("server:8080/register", payload)
+//console.log(`Showing POST result: $(resultPOST)`);
+
 
 app.listen(PORT, HOST);
 console.log(`Running on http://${HOST}:${PORT}`);

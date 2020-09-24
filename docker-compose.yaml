@@ -4,7 +4,7 @@ services:
  # Assume that the server image was already built
  server: 
   build: ./server
-  container_name: docker-node-mongo
+  container_name: server
   image: server
   command: "node app.js"
   ports:

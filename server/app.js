@@ -1,16 +1,18 @@
 'use strict';
 
-var express 				= require("express"),
-    http                    = require("http"),
-    url                     = require("url"),
-    mongoose 				= require("mongoose"),
-    MongoClient 			= require("mongodb").MongoClient,
-    bodyParser 				= require("body-parser"),
-    User 					= require("./views/models/user"),
-    passport 				= require("passport"),
-    LocalStrategy 			= require("passport-local"),
-    passportLocalMongoose 	= require("passport-local-mongoose")
+const   express 				    = require("express")
+        , http                      = require("http")
+        , url                       = require("url")
+        , mongoose 				    = require("mongoose")
+        , bodyParser 			    = require("body-parser")
+        , User 					    = require("./views/models/user")
+        , passport 				    = require("passport")
+        , LocalStrategy 			= require("passport-local")
+        , passportLocalMongoose 	= require("passport-local-mongoose")
+ //       , concat                  = require('concat-stream')
 
+// add timestamps in front of log messages
+require('console-stamp')(console, 'HH:MM:ss.l');
 
 // Constants
 const DEFAULT_PORT = 8080;
@@ -25,6 +27,10 @@ const mongodbHost = process.env.MONGODB_HOST || DEFAULT_MONGODB_HOST
 const mongodbPort = process.env.MONGODB_PORT || DEFAULT_MONGODB_PORT
 const mongodbName = process.env.MONGODB_NAME || DEFAULT_MONGODB_NAME
 
+const port = process.env.PORT || DEFAULT_PORT;
+const host = process.env.HOST || DEFAULT_HOST;
+
+
 // Mongodb setup
 async function connectMongodb() {
     const username = process.env.MONGODB_USERNAME || DEFAULT_MONGODB_USERNAME
@@ -32,7 +38,7 @@ async function connectMongodb() {
     const uri = `mongodb://${username}:${password}@${mongodbHost}:${mongodbPort}/${mongodbName}`;
 
     //Set up the connection to the db
-    await mongoose.connect(uri, {
+    mongoose.connect(uri, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
         useFindAndModify: false,
@@ -47,7 +53,7 @@ async function connectMongodb() {
         console.log(`Got connection: ${nativeConnection}`);
 
         // Show collections
-        nativeConnection.db.collectionNames(function(error, names) {
+        nativeConnection.db.collectionNames((error, names) => {
             if (error) {
                 throw new Error(error);
             } else {
@@ -67,20 +73,7 @@ async function connectMongodb() {
 
     }).catch(error => console.log(error.message));
 
-
 }
-
-/**
- * Print the names of all available databases
- * @param {MongoClient} client A MongoClient that is connected to a cluster
- */
-async function listDatabases(client) {
-    databasesList = await client.db().admin().listDatabases();
-
-    console.log("Databases:");
-    databasesList.databases.forEach(db => console.log(` - ${db.name}`));
-};
-
 
 
 //run express
@@ -106,11 +99,18 @@ passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
-//==============
-//ROUTES
-//==============
+//====================
+// ROUTES
+//====================
 
-app.get("/", function(req, res){
+// This is a test route using for checking the connection between Server and UI.
+app.get("/test", (req, res) => {
+    res.send("Testing Server connection!");
+    console.log("Checking Server Test page");
+    
+})
+
+app.get("/", (req, res) => {
     res.render("home");
     console.log("Checking Server root page");
 });
@@ -123,32 +123,32 @@ app.get("/users", (req, res) => {
     console.log("Fetching Users on the Server side");
 });
 
-app.get("/secret", isLoggedIn, function(req, res){
+app.get("/secret", isLoggedIn, (req, res) => {
     res.render("secret");
     console.log("Checking Server secret page");
 });
 
 //LOGIN ROUTES
 // Render Log In form
-app.get("/login", function(req, res){
+app.get("/login", (req, res) => {
     res.render("login");
 });
 //User Log In handling
 app.post("/login", passport.authenticate("local", {
     successRedirect: "/secret",
     failureRedirect: "/login"
-}),     function(req, res){
+}), (req, res) => {
 });
 
 //LOGOUT ROUTE
-app.get("/logout", function(req, res){
+app.get("/logout", (req, res) => {
     req.logout();
     console.log("Server: Logging out and redirecting to root ...");
     res.redirect("/");
 });
 
 //SEARCH ROUTE
-app.get("/search", function(req, res){
+app.get("/search", (req, res) => {
     res.render("search");
     console.log("Checking Server search page");
 });
@@ -161,9 +161,48 @@ function isLoggedIn(req, res, next){
 }
 
 
+//// Simple Server, but this may not work properly with sockets.
+
+
+// // Start the server
+// http.createServer((request, response) => {
+//     if (request.method == 'POST') {
+//         var body = '';
+//         request.on('data', (data) => {
+//             body += data;
+//             // 1e6 === 1 * Math.pow(10, 6) === 1 * 1000000 ~~~ 1MB
+//             if (body.length > 1e6) { 
+//                 // FLOOD ATTACK OR FAULTY CLIENT, NUKE REQUEST
+//                 response.status(413);
+//                 response.send('Chunk too large!');
+//                 request.connection.destroy();
+//             }
+//         });
+//         request.on('end', () => {
+
+//             var data = JSON.parse(body);
+//             // use POST
+//             console.log(`Data: ${data}`);
+            
+//         });
+
+//     } else if (request.method == `GET`) {
+//         console.log('Server received a GET request!');
+//         var resultToSend = `{"Result":"Received test GET request"}`;
+//         response.writeHead(200, {"Content-Type": "application/json"});
+//         // response.write(data); // You Can Call Response.write Infinite Times BEFORE response.end
+//         response.end(resultToSend);
+//     }
+
+// }).listen(port)
+
+//====================
+// Run the applicatin
+//====================
+
+app.listen(port, host);
+
+// Run MongoDB
 connectMongodb().catch(console.error);
 
-const port = process.env.PORT || DEFAULT_PORT;
-const host = process.env.HOST || DEFAULT_HOST;
-app.listen(port, host);
 console.log(`Running on http://${host}:${port}`);

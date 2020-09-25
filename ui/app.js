@@ -1,19 +1,29 @@
 'use strict';
 
-const { Console } = require("console");
-var express 				= require("express"),
-	https					= require('https'),
-	request					= require("request"),
-    bodyParser 				= require("body-parser"),
-    User 					= require("./views/models/user"),
-    passport 				= require("passport"),
-    LocalStrategy 			= require("passport-local"),
-    passportLocalMongoose 	= require("passport-local-mongoose")
+const   express 				    = require("express")
+	    , http					    = require('http')
+        , request					= require("request")
+        , qs                        = require(`querystring`)
+        , bodyParser 				= require("body-parser")
+        , User 					    = require("./views/models/user")
+        , passport 				    = require("passport")
+        , LocalStrategy 			= require("passport-local")
+        , passportLocalMongoose 	= require("passport-local-mongoose")
 
+// add timestamps in front of log messages
+require('console-stamp')(console, 'HH:MM:ss.l');
 
 // Constants
 const DEFAULT_PORT = 5000;
 const DEFAULT_HOST = '0.0.0.0';
+const SERVER_DEFAULT_PORT = 8080;
+const SERVER_DEFAULT_HOST = 'server';
+
+const port = process.env.PORT || DEFAULT_PORT;
+const host = process.env.HOST || DEFAULT_HOST;
+const serverPort = process.env.SERVER_PORT || SERVER_DEFAULT_PORT;
+const serverHost = process.env.SERVER_HOST || SERVER_DEFAULT_HOST;
+
 
 //run express
 var app = express();
@@ -38,45 +48,68 @@ passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
+//====================
+// ROUTES
+//====================
 
-// USE HTTP GET/POST REQUESTS
+// This is a test route using for checking the connection between Server and UI.
+app.get("/test", (request, response) => {
+    console.log("Checking UI test page");
+    // Perform a GET request on the server.
+    http.get(`http://${serverHost}:${serverPort}/test`, (res) => {
+        res.setEncoding(`utf8`);
+        var body = '';
 
-// Connect UI to the server.
-// Communicate asynchronously.
+        res.on(`data`, (chunk) => {
+            //console.log(`Body: ${chunk}`);
+            body += chunk;
+        });
 
-//==============
-//ROUTES
-//==============
+        res.on(`end`, () => {
+            // var data = JSON.parse(body); // for JSON text
+            // var data = qs.parse(body); // for HTML page
+            var data = body; // for plain text
+            console.log(`Data: ${data}`);
+            response.send(data);
+        });
 
-app.get("/", function(req, res){
+    }).on(`error`, (error) => {
+        return console.log(`SERVER /test GET ERROR: ${error}`);
+    });
+
+}).on(`error`, (error) => {
+    return console.log(`UI /test GET ERROR: ${error}`);
+});
+
+app.get("/", (req, res) => {
     res.render("home");
     console.log("Checking UI root page");
 });
 
-app.get("/secret", isLoggedIn, function(req, res){
+app.get("/secret", isLoggedIn, (req, res) => {
     res.render("secret");
     console.log("Checking UI secret page");
 });
 
 // AUTHENTICATION Routes
 // Render Sign Up form
-app.get("/register", function(req, res){
+app.get("/register", (req, res) => {
     res.render("register");
     console.log("Checking UI Register page");
 });
 //User Sign Up handling
-app.post("/register", function(req, res){
+app.post("/register", (req, res) => {
     console.log("UI: Registering...");
     req.body.username
     req.body.password
-    User.register(new User({username: req.body.username}), req.body.password, function(err, user){
+    User.register(new User({username: req.body.username}), req.body.password, (err, user) => {
         //in case of error throw error msg and redirect to Sign Up page
         if(err){
             console.log(err);
             return res.render("register");
         }
         //log the user in, encode the data (using local strategy) and redirect to Secret page
-        passport.authenticate("local")(req, res, function(){
+        passport.authenticate("local")(req, res, () => {
             res.redirect("/login");
         });
     });
@@ -84,25 +117,25 @@ app.post("/register", function(req, res){
 
 //LOGIN ROUTES
 // Render Log In form
-app.get("/login", function(req, res){
+app.get("/login", (req, res) => {
     res.render("login");
 });
 //User Log In handling
 app.post("/login", passport.authenticate("local", {
     successRedirect: "/secret",
     failureRedirect: "/login"
-}),     function(req, res){
+}), (req, res) => {
 });
 
 //LOGOUT ROUTE
-app.get("/logout", function(req, res){
+app.get("/logout", (req, res) => {
     req.logout();
     console.log("UI: Logging out and redirecting to root ...");
     res.redirect("/");
 });
 
 //SEARCH ROUTE
-app.get("/search", function(req, res){
+app.get("/search", (req, res) => {
     res.render("search");
 });
 
@@ -120,8 +153,9 @@ function isLoggedIn(req, res, next){
 //var resultPOST = app.POST("server:8080/register", payload)
 //console.log(`Showing POST result: $(resultPOST)`);
 
+//====================
+// Run the applicatin
+//====================
 
-const port = process.env.PORT || DEFAULT_PORT;
-const host = process.env.HOST || DEFAULT_HOST;
 app.listen(port, host);
 console.log(`Running on http://${host}:${port}`);

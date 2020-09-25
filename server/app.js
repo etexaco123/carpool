@@ -75,6 +75,11 @@ async function connectMongodb() {
 
 }
 
+// Format the time.
+function getDateTime() {
+    return new Date().toISOString().replace('T', ' ').substr(0, 19);
+}
+
 
 //run express
 var app = express();
@@ -105,7 +110,8 @@ passport.deserializeUser(User.deserializeUser());
 
 // This is a test route using for checking the connection between Server and UI.
 app.get("/test", (req, res) => {
-    res.send("Testing Server connection!");
+    var payload = `Testing Server connection! [TIME: ${getDateTime()}]`
+    res.send(payload);
     console.log("Checking Server Test page");
     
 })

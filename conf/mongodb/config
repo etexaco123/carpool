@@ -1,0 +1,53 @@
+config = {
+  "_id" : "rs0", "members" : [
+    {"_id" : 0, "host" : "mongo-:27017"}
+  ]
+}
+
+
+// OR use the below confif for a cluster of 3 DB's
+
+
+config = {
+  "_id" : "rs0", "members" : [
+    {"_id" : 0, "host" : "mongo-0.mongo:27017"},
+    {"_id" : 1, "host" : "mongo-1.mongo:27017"},
+    {"_id" : 2, "host" : "mongo-2.mongo:27017"}
+  ]
+}
+  
+  
+Kubernetes config:
+
+config = {
+  _id: "rs0", version: 1, members: [
+    { _id: 0, host : "mongo-0.mongo:27017" },
+    { _id: 1, host : "mongo-1.mongo:27017" },
+    { _id: 2, host : "mongo-2.mongo:27017" }
+  ]
+}
+
+config = {
+  _id: "rs0", version: 1, members: [
+    { _id: 0, host : "mongo-0.mongo.default.svc.cluster.wacc:27017" },
+    { _id: 1, host : "mongo-1.mongo.default.svc.cluster.wacc:27017" },
+    { _id: 2, host : "mongo-2.mongo.default.svc.cluster.wacc:27017" }
+  ]
+}
+
+config = {
+  _id: "rs0", version: 1, members: [
+    { _id: 0, host : "mongo-0.mongo.default.svc.cluster.local:27017" },
+    { _id: 1, host : "mongo-1.mongo.default.svc.cluster.local:27017" },
+    { _id: 2, host : "mongo-2.mongo.default.svc.cluster.local:27017" }
+  ]
+}
+
+
+config = {
+  _id: "rs0", version: 1, members: [
+    { _id: 0, host : "mongo-0.mongo.default.svc.cluster.local:27017", "stateStr":"PRIMARY" },
+    { _id: 1, host : "mongo-1.mongo.default.svc.cluster.local:27017", "stateStr":"SECONDARY" },
+    { _id: 2, host : "mongo-2.mongo.default.svc.cluster.local:27017", "stateStr":"SECONDARY" }
+  ]
+}

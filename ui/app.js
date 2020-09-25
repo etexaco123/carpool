@@ -1,17 +1,19 @@
 'use strict';
 
+const { Console } = require("console");
 var express 				= require("express"),
 	https					= require('https'),
 	request					= require("request"),
     bodyParser 				= require("body-parser"),
-    User 					= require("./views/models/user")
+    User 					= require("./views/models/user"),
+    passport 				= require("passport"),
+    LocalStrategy 			= require("passport-local"),
+    passportLocalMongoose 	= require("passport-local-mongoose")
 
 
 // Constants
-const PORT = 5000;
-const HOST = '0.0.0.0';
-
-
+const DEFAULT_PORT = 5000;
+const DEFAULT_HOST = '0.0.0.0';
 
 //run express
 var app = express();
@@ -27,6 +29,14 @@ app.use(require("express-session")({
     resave: false,
     saveUninitialized: false
 }));
+//Required methods to be able to use passport mongoose plugin
+app.use(passport.initialize());
+app.use(passport.session());
+//Use passport's local strategy for user authentication
+passport.use(new LocalStrategy(User.authenticate()));
+//Use the passport's methods for encoding and decoding the data of our sessions
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
 
 
 // USE HTTP GET/POST REQUESTS
@@ -40,19 +50,23 @@ app.use(require("express-session")({
 
 app.get("/", function(req, res){
     res.render("home");
+    console.log("Checking UI root page");
 });
 
 app.get("/secret", isLoggedIn, function(req, res){
     res.render("secret");
+    console.log("Checking UI secret page");
 });
 
 // AUTHENTICATION Routes
 // Render Sign Up form
 app.get("/register", function(req, res){
     res.render("register");
+    console.log("Checking UI Register page");
 });
 //User Sign Up handling
 app.post("/register", function(req, res){
+    console.log("UI: Registering...");
     req.body.username
     req.body.password
     User.register(new User({username: req.body.username}), req.body.password, function(err, user){
@@ -83,6 +97,7 @@ app.post("/login", passport.authenticate("local", {
 //LOGOUT ROUTE
 app.get("/logout", function(req, res){
     req.logout();
+    console.log("UI: Logging out and redirecting to root ...");
     res.redirect("/");
 });
 
@@ -106,5 +121,7 @@ function isLoggedIn(req, res, next){
 //console.log(`Showing POST result: $(resultPOST)`);
 
 
-app.listen(PORT, HOST);
-console.log(`Running on http://${HOST}:${PORT}`);
+const port = process.env.PORT || DEFAULT_PORT;
+const host = process.env.HOST || DEFAULT_HOST;
+app.listen(port, host);
+console.log(`Running on http://${host}:${port}`);

@@ -20,7 +20,6 @@ require('console-stamp')(console, 'HH:MM:ss.l');
 const DEFAULT_PORT = 8080;
 const DEFAULT_HOST = `0.0.0.0`;
 const DEFAULT_MONGODB_NAME = `wacc`
-//const DEFAULT_MONGODB_NAME = `mytestdb`
 const DEFAULT_MONGODB_HOST = `mongo-seed`;
 const DEFAULT_MONGODB_PORT = `27017`;
 const DEFAULT_MONGODB_USERNAME = `root`;

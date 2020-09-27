@@ -70,7 +70,7 @@ app.get("/test", (request, response) => {
             // var data = JSON.parse(body); // for JSON text
             // var data = qs.parse(body); // for HTML page
             var data = body; // for plain text
-            console.log(`Data: ${data}`);
+            //console.log(`Data: ${data}`);
             response.send(data);
         });
 
@@ -100,7 +100,7 @@ app.get("/employees", (request, response) => {
             // var data = JSON.parse(body); // for JSON text
             // var data = qs.parse(body); // for HTML page
             var data = body; // for plain text
-            console.log(`Data: ${data}`);
+            //console.log(`Data: ${data}`);
             response.send(data);
         });
 

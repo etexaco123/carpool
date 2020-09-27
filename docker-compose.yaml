@@ -6,6 +6,7 @@ services:
   build: ./server
   container_name: server
   image: server
+  env_file: ./server/.env
   command: "node app.js"
   ports:
    - 8080:8080
@@ -18,6 +19,7 @@ services:
   build: ./ui
   container_name: ui
   image: ui
+  env_file: ./ui/.env
   command: "node app.js"
   ports:
    - 5000:5000

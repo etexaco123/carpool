@@ -1,15 +1,18 @@
 'use strict';
 
+const { response } = require("express");
 const   express 				    = require("express")
         , http                      = require("http")
         , url                       = require("url")
         , mongoose 				    = require("mongoose")
         , bodyParser 			    = require("body-parser")
-        , User 					    = require("./views/models/user")
         , passport 				    = require("passport")
         , LocalStrategy 			= require("passport-local")
         , passportLocalMongoose 	= require("passport-local-mongoose")
- //       , concat                  = require('concat-stream')
+
+// Load Mongo schemas
+const   Users 					    = require("./views/models/users")
+        , Employees		            = require("./views/models/employees")
 
 // add timestamps in front of log messages
 require('console-stamp')(console, 'HH:MM:ss.l');
@@ -18,6 +21,7 @@ require('console-stamp')(console, 'HH:MM:ss.l');
 const DEFAULT_PORT = 8080;
 const DEFAULT_HOST = `0.0.0.0`;
 const DEFAULT_MONGODB_NAME = `wacc`
+//const DEFAULT_MONGODB_NAME = `mytestdb`
 const DEFAULT_MONGODB_HOST = `mongo-seed`;
 const DEFAULT_MONGODB_PORT = `27017`;
 const DEFAULT_MONGODB_USERNAME = `root`;
@@ -30,48 +34,64 @@ const mongodbName = process.env.MONGODB_NAME || DEFAULT_MONGODB_NAME
 const port = process.env.PORT || DEFAULT_PORT;
 const host = process.env.HOST || DEFAULT_HOST;
 
+//var Employees = null
 
 // Mongodb setup
 async function connectMongodb() {
+    console.log(`Trying to connect to Mongodb ...`);
+
     const username = process.env.MONGODB_USERNAME || DEFAULT_MONGODB_USERNAME
     const password = process.env.MONGODB_PASSWORD || DEFAULT_MONGODB_PASSWORD
-    const uri = `mongodb://${username}:${password}@${mongodbHost}:${mongodbPort}/${mongodbName}`;
+    const uri = `mongodb://${username}:${password}@${mongodbHost}:${mongodbPort}/`;
+
+    console.log(`Username: ${username}`)
+    console.log(`Pass: ${password}`)
+    console.log(`mongodbName: ${mongodbName}`)
+    console.log(`uri: ${uri}`)
 
     //Set up the connection to the db
     mongoose.connect(uri, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
         useFindAndModify: false,
-        useCreateIndex: true
+        useCreateIndex: true,
+        dbName: mongodbName
     }).then((MongooseNode) => {
         console.log('Connected to DB!');
         
-        /* Use the default nativeConnection object since my connection object uses a single hostname and port.
-           Iterate here if you work with multiple hostnames in the connection object */
-        const nativeConnection =  MongooseNode.connections[0]
+        // /* Use the default nativeConnection object since my connection object uses a single hostname and port.
+        //    Iterate here if you work with multiple hostnames in the connection object */
+        // const nativeConnection =  MongooseNode.connections[0]
+        // const nativeConnection = mongoose.connection
 
-        console.log(`Got connection: ${nativeConnection}`);
-
-        // Show collections
-        nativeConnection.db.collectionNames((error, names) => {
-            if (error) {
-                throw new Error(error);
-            } else {
-                console.log(`Found collection ${name}`);
-            }
-        });
-
-        console.log(`Connecting to Admin and showing databases...`);
-
-        // // Show databases: This requires an Admin user
-        // new Admin(nativeConnection.db).listDatabases(function(err, result) {
-        //     console.log('listDatabases succeeded');
-        //     // database list stored in result.databases
-        //     var allDatabases = result.databases;
-        //     console.log(allDatabases);
+        // // Show collections
+        // console.log('Showing current collections...')
+        // nativeConnection.db.listCollections().toArray((error, names) => {
+        //     if (error) {
+        //         throw new Error(error);
+        //     } else {
+        //         names.forEach((elem, idx, aarr) => {
+        //             console.log(`Collection: ${elem.name}`);
+        //         });
+        //     }
         // });
 
-    }).catch(error => console.log(error.message));
+        // // Show documents from collection 'Employees'
+        // console.log('Showing documents form collection Employees')
+        // //Employees = nativeConnection.db.collection('Employees')
+        // Employees.find({}, (err, results) => {
+        //     if (err) throw err;
+        //     results.forEach((elem, idx, arr) => {
+        //         console.log(`Elem: ${idx}`)
+        //         console.log(`Elem first_name: ${elem.first_name}`)
+        //         console.log(`Elem last_name: ${elem.last_name}`)
+        //         console.log(`Elem address: ${elem.address}`)
+        //         console.log(`Elem job_title: ${elem.job_title}`)
+        //         console.log(`Elem age: ${elem.age}`)
+        //     })
+        // })
+
+    }).catch(error => console.log(`Error connecting to Mongodb: ${error.message}`));
 
 }
 
@@ -99,34 +119,46 @@ app.use(require("express-session")({
 app.use(passport.initialize());
 app.use(passport.session());
 //Use passport's local strategy for user authentication
-passport.use(new LocalStrategy(User.authenticate()));
+passport.use(new LocalStrategy(Users.authenticate()));
 //Use the passport's methods for encoding and decoding the data of our sessions
-passport.serializeUser(User.serializeUser());
-passport.deserializeUser(User.deserializeUser());
+passport.serializeUser(Users.serializeUser());
+passport.deserializeUser(Users.deserializeUser());
 
 //====================
 // ROUTES
 //====================
 
 // This is a test route using for checking the connection between Server and UI.
-app.get("/test", (req, res) => {
+app.get("/test", async (req, res) => {
+    console.log("Checking Server Test page");
     var payload = `Testing Server connection! [TIME: ${getDateTime()}]`
     res.send(payload);
-    console.log("Checking Server Test page");
-    
 })
 
 app.get("/", (req, res) => {
-    res.render("home");
     console.log("Checking Server root page");
+    res.render("home");
 });
 
-app.get("/users", (req, res) => {
-    User.find({}, (err, users) => {
-        if (err) res.status(500).send(error)
-            res.status(200).json(users);
+app.get("/users", async (req, res) => {
+    console.log(`Fetching Users on the Server side [TIME: ${getDateTime()}]`);
+
+    // Retrieve the documents as quick as possible, use "lean"
+    Users.find().lean().exec((err, users) => {
+        if (err) res.status(500).send(err)
+        res.status(200).send(users)
     });
-    console.log("Fetching Users on the Server side");
+});
+
+app.get("/employees", async (req, res) => {
+    console.log(`Fetching Employees on the Server side [TIME: ${getDateTime()}]`);
+
+    // Retrieve the documents as quick as possible, use "lean"
+    Employees.find().lean().exec((err, employees) => {
+        if (err) res.status(500).send(err)
+        res.status(200).send(employees)
+    })
+
 });
 
 app.get("/secret", isLoggedIn, (req, res) => {

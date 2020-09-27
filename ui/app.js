@@ -5,10 +5,13 @@ const   express 				    = require("express")
         , request					= require("request")
         , qs                        = require(`querystring`)
         , bodyParser 				= require("body-parser")
-        , User 					    = require("./views/models/user")
         , passport 				    = require("passport")
         , LocalStrategy 			= require("passport-local")
         , passportLocalMongoose 	= require("passport-local-mongoose")
+
+// Load Mongo schemas
+const   Users 					    = require("./views/models/users")
+        , Employees		            = require("./views/models/employees")
 
 // add timestamps in front of log messages
 require('console-stamp')(console, 'HH:MM:ss.l');
@@ -43,10 +46,10 @@ app.use(require("express-session")({
 app.use(passport.initialize());
 app.use(passport.session());
 //Use passport's local strategy for user authentication
-passport.use(new LocalStrategy(User.authenticate()));
+passport.use(new LocalStrategy(Users.authenticate()));
 //Use the passport's methods for encoding and decoding the data of our sessions
-passport.serializeUser(User.serializeUser());
-passport.deserializeUser(User.deserializeUser());
+passport.serializeUser(Users.serializeUser());
+passport.deserializeUser(Users.deserializeUser());
 
 //====================
 // ROUTES
@@ -81,6 +84,66 @@ app.get("/test", (request, response) => {
     return console.log(`UI /test GET ERROR: ${error}`);
 });
 
+// Show Employees
+// This is a test route using for checking the connection between the UI, Server and MongoDB.
+app.get("/employees", (request, response) => {
+    console.log("Checking UI Employees page");
+    // Perform a GET request on the server.
+    http.get(`http://${serverHost}:${serverPort}/employees`, (res) => {
+        res.setEncoding(`utf8`);
+        var body = '';
+
+        res.on(`data`, (chunk) => {
+            //console.log(`Body: ${chunk}`);
+            body += chunk;
+        });
+
+        res.on(`end`, () => {
+            // var data = JSON.parse(body); // for JSON text
+            // var data = qs.parse(body); // for HTML page
+            var data = body; // for plain text
+            console.log(`Data: ${data}`);
+            response.send(data);
+        });
+
+    }).on(`error`, (error) => {
+        return console.log(`SERVER /employees GET ERROR: ${error}`);
+    });
+
+}).on(`error`, (error) => {
+    return console.log(`UI /employees GET ERROR: ${error}`);
+});
+
+// Show Users
+// This is a test route using for checking the connection between the UI, Server and MongoDB.
+app.get("/users", (request, response) => {
+    console.log("Checking UI Users page");
+    // Perform a GET request on the server.
+    http.get(`http://${serverHost}:${serverPort}/users`, (res) => {
+        res.setEncoding(`utf8`);
+        var body = '';
+
+        res.on(`data`, (chunk) => {
+            //console.log(`Body: ${chunk}`);
+            body += chunk;
+        });
+
+        res.on(`end`, () => {
+            // var data = JSON.parse(body); // for JSON text
+            // var data = qs.parse(body); // for HTML page
+            var data = body; // for plain text
+            console.log(`Data: ${data}`);
+            response.send(data);
+        });
+
+    }).on(`error`, (error) => {
+        return console.log(`SERVER /users GET ERROR: ${error}`);
+    });
+
+}).on(`error`, (error) => {
+    return console.log(`UI /users GET ERROR: ${error}`);
+});
+
 app.get("/", (req, res) => {
     res.render("home");
     console.log("Checking UI root page");
@@ -102,7 +165,7 @@ app.post("/register", (req, res) => {
     console.log("UI: Registering...");
     req.body.username
     req.body.password
-    User.register(new User({username: req.body.username}), req.body.password, (err, user) => {
+    Users.register(new Users({username: req.body.username}), req.body.password, (err, user) => {
         //in case of error throw error msg and redirect to Sign Up page
         if(err){
             console.log(err);

@@ -2,8 +2,6 @@
 
 const   express 				    = require("express")
 	    , http					    = require('http')
-        , request					= require("request")
-        , qs                        = require(`querystring`)
         , bodyParser 				= require("body-parser")
         , passport 				    = require("passport")
         , LocalStrategy 			= require("passport-local")

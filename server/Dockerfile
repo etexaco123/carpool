@@ -1,9 +1,19 @@
-FROM python:3.7-slim
+FROM mhart/alpine-node:12
 
-COPY ./src/ ./home/app/
+# Create app directory
+WORKDIR /usr/src/app
 
-WORKDIR /home/app/
+# Install app dependencies
+# A wildcard is used to ensure both package.json AND package-lock.json are copied
+# where available (npm@5+)
+COPY package*.json ./
 
-RUN pip install flask
+RUN npm install
+# If you are building your code for production
+# RUN npm ci --only=production
 
-CMD python app.py
+# Bundle app source
+COPY . .
+
+EXPOSE 8080
+CMD [ "node", "app.js" ]

@@ -1,4 +1,4 @@
-FROM node:12
+FROM mhart/alpine-node:12
 
 # Create app directory
 WORKDIR /usr/src/app
@@ -15,5 +15,5 @@ RUN npm install
 # Bundle app source
 COPY . .
 
-EXPOSE 8080
+EXPOSE 5000
 CMD [ "node", "app.js" ]

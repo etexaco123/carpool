@@ -8,4 +8,7 @@ MY_DIR=$(dirname $(readlink -f $0))
 cd $MY_DIR/server
 docker build -t server .
 
+cd $MY_DIR/ui
+docker build -t ui .
+
 

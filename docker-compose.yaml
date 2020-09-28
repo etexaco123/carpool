@@ -2,12 +2,53 @@ version: "3.7"
 
 services:
  # Assume that the server image was already built
- server:
+ server: 
   build: ./server
-  image: server:latest
   container_name: server
+  image: server
+  env_file: ./server/.env
+  command: "node app.js"
+  ports:
+   - 8080:8080
+  depends_on:
+   - mongo-seed
+  networks:
+   - wacc
+   
+ ui: 
+  build: ./ui
+  container_name: ui
+  image: ui
+  env_file: ./ui/.env
+  command: "node app.js"
   ports:
    - 5000:5000
+  networks:
+   - wacc
+
+ mongo-seed:
+  container_name: mongo-seed
+  image: mongo:latest
+  environment:
+   # Dummy log in credentials
+    MONGO_INITDB_ROOT_USERNAME: root
+    MONGO_INITDB_ROOT_PASSWORD: rootpass
+  ports:
+   - 27017:27017
+  volumes:
+   - mongodb-seed-data:/data/db
+  networks:
+   - wacc
+   
+ mongosh:
+  container_name: mongosh
+  image: mongo:latest
+  entrypoint: mongo mongo -u root -p rootpass
+  volumes:
+   - mongo-schema:/schema
+   - mongo-historical-data:/historical-data
+  depends_on:
+   - mongo-seed
   networks:
    - wacc
   
@@ -71,7 +112,9 @@ services:
   entrypoint: cqlsh cassandra-seed
   volumes:
    - cassandra-schema:/schema
-   - historical-data:/historical-data
+   - cassandra-historical-data:/historical-data
+  depends_on:
+   - cassandra-seed
   networks:
    - wacc
 
@@ -130,6 +173,12 @@ services:
     - zookeeper
 
 volumes:
+ mongo-schema:
+  external: true
+ mongodb-seed-data:
+  external: true
+ mongo-historical-data:
+  external: true
  cassandra-schema:
   external: true
  cassandra-data-seed:
@@ -138,7 +187,7 @@ volumes:
   external: true
  cassandra-data-1:
   external: true
- historical-data:
+ cassandra-historical-data:
   external: true
  kafka-offset:
   external: true

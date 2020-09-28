@@ -42,11 +42,6 @@ async function connectMongodb() {
     const password = process.env.MONGODB_PASSWORD || DEFAULT_MONGODB_PASSWORD
     const uri = `mongodb://${username}:${password}@${mongodbHost}:${mongodbPort}/`;
 
-    console.log(`Username: ${username}`)
-    console.log(`Pass: ${password}`)
-    console.log(`mongodbName: ${mongodbName}`)
-    console.log(`uri: ${uri}`)
-
     //Set up the connection to the db
     mongoose.connect(uri, {
         useNewUrlParser: true,
@@ -107,6 +102,7 @@ app.use(express.static("public"));
 app.set('view engine', 'ejs');
 //Needed for posting data into a request
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.json());
 //required method to use express-session
 app.use(require("express-session")({
     secret: "group6 is the best",
@@ -157,6 +153,21 @@ app.get("/employees", async (req, res) => {
         res.status(200).send(employees)
     })
 
+});
+
+//User Sign Up handling
+app.post("/register", (req, res) => {
+    console.log("UI: Registering...");
+
+    var user = new Users({
+        username: req.body.username,
+        password: req.body.password
+    })
+    user.save((err) => {
+        console.log(`Inserting data into Mongodb ...`);
+        if (err) res.status(500).send(err);
+        console.log(`... User added successfully`);
+    });
 });
 
 app.get("/secret", isLoggedIn, (req, res) => {

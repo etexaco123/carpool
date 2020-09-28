@@ -1,15 +1,9 @@
 'use strict';
 
 const   express 				    = require("express")
-	    , http					    = require('http')
+        , http					    = require('http')
+        , phin                      = require('phin')
         , bodyParser 				= require("body-parser")
-        , passport 				    = require("passport")
-        , LocalStrategy 			= require("passport-local")
-        , passportLocalMongoose 	= require("passport-local-mongoose")
-
-// Load Mongo schemas
-const   Users 					    = require("./views/models/users")
-        , Employees		            = require("./views/models/employees")
 
 // add timestamps in front of log messages
 require('console-stamp')(console, 'HH:MM:ss.l');
@@ -34,20 +28,13 @@ app.use(express.static("public"));
 app.set('view engine', 'ejs');
 //Needed for posting data into a request
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.json());
 //required method to use express-session
 app.use(require("express-session")({
     secret: "group6 is the best",
     resave: false,
     saveUninitialized: false
 }));
-//Required methods to be able to use passport mongoose plugin
-app.use(passport.initialize());
-app.use(passport.session());
-//Use passport's local strategy for user authentication
-passport.use(new LocalStrategy(Users.authenticate()));
-//Use the passport's methods for encoding and decoding the data of our sessions
-passport.serializeUser(Users.serializeUser());
-passport.deserializeUser(Users.deserializeUser());
 
 //====================
 // ROUTES
@@ -84,7 +71,7 @@ app.get("/test", (request, response) => {
 
 // Show Employees
 // This is a test route using for checking the connection between the UI, Server and MongoDB.
-app.get("/employees", (request, response) => {
+app.get("/employees", async (request, response) => {
     console.log("Checking UI Employees page");
     // Perform a GET request on the server.
     http.get(`http://${serverHost}:${serverPort}/employees`, (res) => {
@@ -114,7 +101,7 @@ app.get("/employees", (request, response) => {
 
 // Show Users
 // This is a test route using for checking the connection between the UI, Server and MongoDB.
-app.get("/users", (request, response) => {
+app.get("/users", async (request, response) => {
     console.log("Checking UI Users page");
     // Perform a GET request on the server.
     http.get(`http://${serverHost}:${serverPort}/users`, (res) => {
@@ -130,7 +117,7 @@ app.get("/users", (request, response) => {
             // var data = JSON.parse(body); // for JSON text
             // var data = qs.parse(body); // for HTML page
             var data = body; // for plain text
-            console.log(`Data: ${data}`);
+            //console.log(`Data: ${data}`);
             response.send(data);
         });
 
@@ -159,21 +146,42 @@ app.get("/register", (req, res) => {
     console.log("Checking UI Register page");
 });
 //User Sign Up handling
-app.post("/register", (req, res) => {
+app.post("/register", async (req, res) => {
     console.log("UI: Registering...");
-    req.body.username
-    req.body.password
-    Users.register(new Users({username: req.body.username}), req.body.password, (err, user) => {
-        //in case of error throw error msg and redirect to Sign Up page
-        if(err){
-            console.log(err);
-            return res.render("register");
+    console.log(`Username: ${req.body.username}`);
+    console.log(`Password: ${req.body.password}`);
+    
+    // Ensure data is secure, password is hashed
+    // TODO: HASH PASSWORD
+    
+
+    // Send POST to the server
+    // http.post(`http://${serverHost}:${serverPort}/register`, (res) => {
+    //     res.setEncoding(`utf8`);
+    //     var body = '';
+
+    // }).on(`error`, (error) => {
+    //     return console.log(`SERVER /users GET ERROR: ${error}`);
+    // });
+
+
+    const ppostjson = phin.defaults({
+        'method': 'POST',
+        'parse': 'json',
+        'timeout': 2000
+    })
+    await ppostjson({
+    //await phin({
+        url: `http://${serverHost}:${serverPort}/register`,
+        data: {
+            username: req.body.username,
+            password: req.body.password
         }
-        //log the user in, encode the data (using local strategy) and redirect to Secret page
-        passport.authenticate("local")(req, res, () => {
-            res.redirect("/login");
-        });
-    });
+    }).catch((err) => {
+        assert.isNotOk(error,'Promise error');
+        done();
+    })
+
 });
 
 //LOGIN ROUTES
@@ -182,11 +190,11 @@ app.get("/login", (req, res) => {
     res.render("login");
 });
 //User Log In handling
-app.post("/login", passport.authenticate("local", {
-    successRedirect: "/secret",
-    failureRedirect: "/login"
-}), (req, res) => {
-});
+// app.post("/login", passport.authenticate("local", {
+//     successRedirect: "/secret",
+//     failureRedirect: "/login"
+// }), (req, res) => {
+// });
 
 //LOGOUT ROUTE
 app.get("/logout", (req, res) => {

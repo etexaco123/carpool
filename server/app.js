@@ -168,6 +168,8 @@ app.post("/register", (req, res) => {
         if (err) res.status(500).send(err);
         console.log(`... User added successfully`);
     });
+
+    res.status(201).send({"message:":"created"})
 });
 
 app.get("/secret", isLoggedIn, (req, res) => {

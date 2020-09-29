@@ -145,6 +145,7 @@ app.get("/register", (req, res) => {
     res.render("register");
     console.log("Checking UI Register page");
 });
+
 //User Sign Up handling
 app.post("/register", async (req, res) => {
     console.log("UI: Registering...");
@@ -155,32 +156,22 @@ app.post("/register", async (req, res) => {
     // TODO: HASH PASSWORD
     
 
-    // Send POST to the server
-    // http.post(`http://${serverHost}:${serverPort}/register`, (res) => {
-    //     res.setEncoding(`utf8`);
-    //     var body = '';
-
-    // }).on(`error`, (error) => {
-    //     return console.log(`SERVER /users GET ERROR: ${error}`);
-    // });
-
-
-    const ppostjson = phin.defaults({
-        'method': 'POST',
-        'parse': 'json',
-        'timeout': 2000
-    })
-    await ppostjson({
-    //await phin({
-        url: `http://${serverHost}:${serverPort}/register`,
-        data: {
-            username: req.body.username,
-            password: req.body.password
-        }
-    }).catch((err) => {
-        assert.isNotOk(error,'Promise error');
-        done();
-    })
+    try {
+        await phin({
+            url: `http://${serverHost}:${serverPort}/register`,
+            method: 'POST',
+            parse: 'json',
+            timeout: 3000,
+            data: {
+                username: req.body.username,
+                password: req.body.password
+            }
+        })
+    } catch (error) {
+        console.log(`Error in POST register: ${error}`)
+    }
+    
+    res.status(200).send({"message":"ok"});
 
 });
 

@@ -9,7 +9,7 @@ services:
   env_file: ./server/.env
   command: "node app.js"
   ports:
-   - 8080:8080
+   - 5050:5050
   depends_on:
    - mongo-seed
   networks:
@@ -23,6 +23,17 @@ services:
   command: "node app.js"
   ports:
    - 5000:5000
+  networks:
+   - wacc
+   
+ ui-vue3: 
+  build: ./ui-vue3
+  container_name: ui-vue3
+  image: ui-vue3
+  env_file: ./ui-vue3/.env
+  command: "yarn serve"
+  ports:
+   - 8080:8080
   networks:
    - wacc
 

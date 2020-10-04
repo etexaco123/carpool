@@ -3,6 +3,7 @@
 const   express 				    = require("express")
         , http                      = require("http")
         , url                       = require("url")
+        , cors                      = require("cors")
         , mongoose 				    = require("mongoose")
         , bodyParser 			    = require("body-parser")
         , passport 				    = require("passport")
@@ -17,7 +18,7 @@ const   Users 					    = require("./views/models/users")
 require('console-stamp')(console, 'HH:MM:ss.l');
 
 // Constants
-const DEFAULT_PORT = 8080;
+const DEFAULT_PORT = 5050;
 const DEFAULT_HOST = `0.0.0.0`;
 const DEFAULT_MONGODB_NAME = `wacc`
 const DEFAULT_MONGODB_HOST = `mongo-seed`;
@@ -96,6 +97,8 @@ function getDateTime() {
 
 //run express
 var app = express();
+// Cors
+app.use(cors());
 //Needed to be able to run contents of public dir like css file
 app.use(express.static("public"));
 //Set view engine to be embedded JS
@@ -136,20 +139,32 @@ app.get("/", (req, res) => {
 
 app.get("/users", async (req, res) => {
     console.log(`Fetching Users on the Server side [TIME: ${getDateTime()}]`);
+    if (mongoose.connection.readyState == 0) {
+        return res.status(500).send('No DB connection!');
+    } else if(mongoose.connection.readyState == 2 || 
+              mongoose.connection.readyState == 3) {
+        return res.status(503).send('MongoDB connection is yet initialized. Try again in a few moments. ');
+    }
 
     // Retrieve the documents as quick as possible, use "lean"
     Users.find().lean().exec((err, users) => {
-        if (err) res.status(500).send(err)
+        if (err) return res.status(500).send(err)
         res.status(200).send(users)
     });
 });
 
 app.get("/employees", async (req, res) => {
     console.log(`Fetching Employees on the Server side [TIME: ${getDateTime()}]`);
+    if (mongoose.connection.readyState == 0) {
+        return res.status(500).send('No DB connection!');
+    } else if(mongoose.connection.readyState == 2 || 
+              mongoose.connection.readyState == 3) {
+        return res.status(503).send('MongoDB connection is yet initialized. Try again in a few moments. ');
+    }
 
     // Retrieve the documents as quick as possible, use "lean"
     Employees.find().lean().exec((err, employees) => {
-        if (err) res.status(500).send(err)
+        if (err) return res.status(500).send(err)
         res.status(200).send(employees)
     })
 
@@ -157,7 +172,13 @@ app.get("/employees", async (req, res) => {
 
 //User Sign Up handling
 app.post("/register", (req, res) => {
-    console.log("UI: Registering...");
+    console.log("Server: Registering...");
+    if (mongoose.connection.readyState == 0) {
+        return res.status(500).send('No DB connection!');
+    } else if(mongoose.connection.readyState == 2 || 
+              mongoose.connection.readyState == 3) {
+        return res.status(503).send('MongoDB connection is yet initialized. Try again in a few moments. ');
+    }
 
     var user = new Users({
         username: req.body.username,
@@ -165,7 +186,7 @@ app.post("/register", (req, res) => {
     })
     user.save((err) => {
         console.log(`Inserting data into Mongodb ...`);
-        if (err) res.status(500).send(err);
+        if (err) return res.status(500).send(err);
         console.log(`... User added successfully`);
     });
 

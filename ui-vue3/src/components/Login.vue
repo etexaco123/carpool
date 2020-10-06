@@ -1,5 +1,6 @@
 <template>
-  <div id="login">
+<div>
+    <div id="login">
     <form>
       <label> Username: </label>
       <input type="text" v-model.lazy="username" required />
@@ -16,6 +17,8 @@
   <button v-on:click.prevent="postLogin">
     Log in
   </button>
+</div>
+  
   
 </template>
 

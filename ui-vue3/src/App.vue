@@ -2,15 +2,24 @@
 <div>
 
   <div>
+    <app-header v-bind:title="title" v-on:changetitleheader="updateTitle($event)"></app-header>
+    <h2 v-on:click="changeSubtitle"> {{ subtitle }} </h2>
+  </div>
+
+  <div>
     <app-navbar></app-navbar>
   </div>
   
-  <div>
-    <app-header v-bind:title="title" v-on:changetitleheader="updateTitle($event)"></app-header>
-    <h2 v-on:click="changeSubtitle"> {{ subtitle }} </h2>
-  </div>  
+  <div id="nav">
+    <router-link to="/">Home</router-link> |
+    <router-link to="/test">Test</router-link> | 
+    <router-link to="/register">Register</router-link> | 
+    <router-link to="/login">Login</router-link>
+  </div>
+  <router-view/>
 
   <div>    
+    <button v-on:click="buttonsSelector = 'app-home'"> Home </button>
     <button v-on:click="buttonsSelector = 'app-test'"> Test server! </button>
     <button v-on:click="buttonsSelector = 'app-register'"> Register </button>
     <button v-on:click="buttonsSelector = 'app-login'"> Login </button>
@@ -31,6 +40,7 @@
 
 <script>
 import Header from './components/Header.vue'
+import Home from './components/Home.vue'
 import Test from './components/Test.vue'
 import Register from './components/Register.vue'
 import Login from './components/Login.vue'
@@ -40,6 +50,7 @@ import Navbar from './components/Navbar.vue'
 export default {
   components: {
     'app-header': Header,
+    'app-home': Home,
     'app-test': Test,
     'app-register': Register,
     'app-login': Login,
@@ -57,7 +68,7 @@ export default {
       toggle2: false,
 
       // buttons selector
-      buttonsSelector: 'app-test'
+      buttonsSelector: 'app-home'
     }
   },
   methods: {
@@ -108,7 +119,25 @@ body {
   color: #2c3e50;
   margin-top: 60px;
 }
+
 h1 {
   color: red;
+}
+
+button {
+  margin-top: 10px;
+}
+
+#nav {
+  padding: 30px;
+}
+
+#nav a {
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+#nav a.router-link-exact-active {
+  color: #42b983;
 }
 </style>

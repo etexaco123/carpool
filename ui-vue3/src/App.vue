@@ -1,11 +1,11 @@
 <template> 
-<div>    
-    <div>
-      <app-navbar></app-navbar>
-    </div> 
-    
-   <div>
+<div>
+
+  <div>
+    <app-navbar></app-navbar>
+  </div>
   
+  <div>
     <app-header v-bind:title="title" v-on:changetitleheader="updateTitle($event)"></app-header>
     <h2 v-on:click="changeSubtitle"> {{ subtitle }} </h2>
   </div>  
@@ -26,10 +26,6 @@
   </div>
 
 </div>
- 
-
-
-
 </template>
 
 

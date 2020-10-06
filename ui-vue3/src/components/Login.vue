@@ -1,6 +1,7 @@
 <template>
 <div>
-    <div id="login">
+
+  <div id="login">
     <form>
       <label> Username: </label>
       <input type="text" v-model.lazy="username" required />
@@ -14,12 +15,11 @@
     <input type="checkbox" value="true" v-model="stayloggedin" />
   </div>
 
-  <button v-on:click.prevent="postLogin">
-    Log in
-  </button>
+  <div>
+    <button v-on:click.prevent="postLogin"> Log in </button>
+  </div>
+
 </div>
-  
-  
 </template>
 
 <script>

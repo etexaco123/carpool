@@ -1,4 +1,6 @@
 <template>
+<div>
+
   <div id="register">
     <form>
       <label> Username: </label>
@@ -8,10 +10,11 @@
     </form>
   </div>
 
-  <button v-on:click.prevent="postRegistration">
-    Submit
-  </button>
+  <div>
+    <button v-on:click.prevent="postRegistration"> Submit </button>
+  </div>
 
+</div>
 </template>
 
 <script>

@@ -1,4 +1,6 @@
 <template>
+<div>
+
   <div id="test">
     <form>
       <label> URL: </label>
@@ -6,15 +8,16 @@
     </form>
   </div>
 
-  <button v-on:click.prevent="testServer">
-    Test
-  </button>
+  <div>
+    <button v-on:click.prevent="testServer"> Test </button>
+  </div>
 
   <div>
     <p> Result: </p>
     <p> {{ testResponse }} </p>
   </div>
-  
+
+</div>
 </template>
 
 <script>

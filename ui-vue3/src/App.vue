@@ -1,5 +1,11 @@
 <template> 
-  <div>
+<div>    
+    <div>
+      <app-navbar></app-navbar>
+    </div> 
+    
+   <div>
+  
     <app-header v-bind:title="title" v-on:changetitleheader="updateTitle($event)"></app-header>
     <h2 v-on:click="changeSubtitle"> {{ subtitle }} </h2>
   </div>  
@@ -19,6 +25,11 @@
     <app-footer v-bind:title="title"> </app-footer>
   </div>
 
+</div>
+ 
+
+
+
 </template>
 
 
@@ -28,6 +39,7 @@ import Test from './components/Test.vue'
 import Register from './components/Register.vue'
 import Login from './components/Login.vue'
 import Footer from './components/Footer.vue'
+import Navbar from './components/Navbar.vue'
 
 export default {
   components: {
@@ -35,7 +47,8 @@ export default {
     'app-test': Test,
     'app-register': Register,
     'app-login': Login,
-    'app-footer': Footer
+    'app-footer': Footer,
+    'app-navbar': Navbar
   },
   data() {
     return {
@@ -73,6 +86,24 @@ export default {
 </script>
 
 <style>
+body {
+    display: -ms-flexbox;
+    display: -webkit-box;
+    display: flex;
+    -ms-flex-align: center;
+    -ms-flex-pack: center;
+    -webkit-box-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    justify-content: center;
+    padding-top: 40px;
+    padding-bottom: 40px;
+    /* background-color: #f5f5f5;  */
+    background: #43C6AC;  /* fallback for old browsers */
+    background: -webkit-linear-gradient(to left, #191654, #43C6AC);  /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to left, #191654, #43C6AC); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
+
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;

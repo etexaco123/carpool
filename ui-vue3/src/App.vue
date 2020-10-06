@@ -16,7 +16,13 @@
     <router-link to="/register">Register</router-link> | 
     <router-link to="/login">Login</router-link>
   </div>
-  <router-view/>
+
+  <router-view v-slot="{ Component }">
+    <keep-alive>
+      <component :is="Component" />
+    </keep-alive>
+  </router-view>
+
 
   <div>    
     <button v-on:click="buttonsSelector = 'app-home'"> Home </button>

@@ -1,6 +1,6 @@
 <template>
 
-<div>
+<div id="navbar">
     <nav class="navbar fixed-top navbar-expand-lg navbar-light bg-light">
         <div class="container">
             <a class="navbar-brand" id="brand" href="/">Coorporate Carpooling Service</a>
@@ -17,6 +17,12 @@
                             <span class="sr-only"></span>
                         </a>
                     </span>
+                <span class="nav-item active">
+                        <a class="nav-link" href="/test">
+                            Test
+                            <span class="sr-only"></span>
+                        </a>
+                </span>
                 <span class="nav-item active">
                         <a class="nav-link" href="/register">
                             Sign Up
@@ -49,5 +55,23 @@ export default {
 </script>
 
 <style scoped>
+#brand{
+    color: #007bff;
+    font-weight: bolder;
+}
+
+.nav-link:hover {
+    color: #191654;
+}
+
+#home-link:hover{
+    color: #191654;
+
+}
+
+.navbar-light .navbar-nav .active>.nav-link, .navbar-light .navbar-nav .nav-link.active, .navbar-light .navbar-nav .nav-link.show, .navbar-light .navbar-nav .show>.nav-link {
+    color: #43C6AC;
+    font-weight: bold;
+}
 
 </style>

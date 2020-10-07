@@ -14,7 +14,8 @@
     <router-link to="/">Home</router-link> |
     <router-link to="/test">Test</router-link> | 
     <router-link to="/register">Register</router-link> | 
-    <router-link to="/login">Login</router-link>
+    <router-link to="/login">Login</router-link> | 
+    <router-link to="/logout">Logout</router-link>
   </div>
 
   <router-view v-slot="{ Component }">
@@ -22,19 +23,6 @@
       <component :is="Component" />
     </keep-alive>
   </router-view>
-
-
-  <div>    
-    <button v-on:click="buttonsSelector = 'app-home'"> Home </button>
-    <button v-on:click="buttonsSelector = 'app-test'"> Test server! </button>
-    <button v-on:click="buttonsSelector = 'app-register'"> Register </button>
-    <button v-on:click="buttonsSelector = 'app-login'"> Login </button>
-    
-    <keep-alive>
-      <component v-bind:is="buttonsSelector"> </component>
-    </keep-alive>
-
-  </div>
 
   <div>
     <app-footer v-bind:title="title"> </app-footer>
@@ -50,6 +38,7 @@ import Home from './components/Home.vue'
 import Test from './components/Test.vue'
 import Register from './components/Register.vue'
 import Login from './components/Login.vue'
+import Logout from './components/Logout.vue'
 import Footer from './components/Footer.vue'
 import Navbar from './components/Navbar.vue'
 
@@ -60,6 +49,7 @@ export default {
     'app-test': Test,
     'app-register': Register,
     'app-login': Login,
+    'app-logout': Logout,
     'app-footer': Footer,
     'app-navbar': Navbar
   },
@@ -72,9 +62,6 @@ export default {
       subtitle_wacc: 'WaCC project',
       toggle: true,
       toggle2: false,
-
-      // buttons selector
-      buttonsSelector: 'app-home'
     }
   },
   methods: {
@@ -123,15 +110,12 @@ body {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+  margin-top: 20px;
+  margin-bottom: 20px;
 }
 
 h1 {
   color: red;
-}
-
-button {
-  margin-top: 10px;
 }
 
 #nav {

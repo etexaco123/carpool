@@ -26,6 +26,7 @@ footer{
 p{
   color: lightgreen;
   text-align: center;
+  font-weight: bold;
 }
 
 </style>

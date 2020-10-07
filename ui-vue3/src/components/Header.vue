@@ -1,6 +1,6 @@
 <template>
   <header>
-    <h1 v-on:click="changeTitle"> {{ title }} </h1>
+    <h1 @click="changeTitle"> {{ title }} </h1>
   </header>
 </template>
 
@@ -31,6 +31,7 @@ header{
 h1{
   color: #222;
   text-align: center;
+  font-weight: bold;
 }
 
 </style>

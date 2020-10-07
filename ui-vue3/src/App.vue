@@ -2,8 +2,8 @@
 <div>
 
   <div>
-    <app-header v-bind:title="title" v-on:changetitleheader="updateTitle($event)"></app-header>
-    <h2 v-on:click="changeSubtitle"> {{ subtitle }} </h2>
+    <app-header v-bind:title="title" @changetitleheader="updateTitle($event)"></app-header>
+    <h2 @click="changeSubtitle"> {{ subtitle }} </h2>
   </div>
 
   <div>
@@ -18,11 +18,13 @@
     <router-link to="/logout">Logout</router-link>
   </div>
 
-  <router-view v-slot="{ Component }">
-    <keep-alive>
-      <component :is="Component" />
-    </keep-alive>
+  <router-view v-slot="{ Component }" @showresult="showResponse($event)">
+    <component :is="Component" />
   </router-view>
+
+  <div id="serverResponse" v-if="isResponseShowable">
+    <p> SERVER RESPONSE: {{ response }} </p>
+  </div>
 
   <div>
     <app-footer v-bind:title="title"> </app-footer>
@@ -62,6 +64,8 @@ export default {
       subtitle_wacc: 'WaCC project',
       toggle: true,
       toggle2: false,
+      response: "",
+      isResponseShowable: false
     }
   },
   methods: {
@@ -80,6 +84,15 @@ export default {
         this.subtitle = this.subtitle_wacc
 
       this.toggle2 = !this.toggle2
+    },
+    showResponse: function(result) {
+      this.response = result
+      console.log(`RECEIVED RESULT: ${result}`)
+
+      //// Don't show it just yet at the parent level
+      //if (this.response) {
+      //  this.isResponseShowable = true
+      //}
     }
   }
 }

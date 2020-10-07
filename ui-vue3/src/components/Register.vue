@@ -11,7 +11,12 @@
   </div>
 
   <div>
-    <button v-on:click.prevent="postRegistration"> Submit </button>
+    <button @click.prevent="postRegistration"> Submit </button>
+  </div>
+
+  <div id="resultArea" v-if="this.showServerResponse">
+    <label id="resultLabel"> Result: </label>
+    <p id="serverResponse"> {{ serverResponse }} </p>
   </div>
 
 </div>
@@ -21,11 +26,13 @@
 import axios from 'axios';
 
 export default {
+  emits: ['showresult'],
   data() {
     return {
       username: "",
       password: "",
-      registerResponse: ""
+      serverResponse: "",
+      showServerResponse: false
     }
   },
   methods: {
@@ -39,19 +46,19 @@ export default {
         password: this.password
       })
         .then(response => {
-          this.registerResponse = response.data
-          console.log(this.registerResponse);
-
-          // TODO: Emit response back to parent App and show it on the screen.
+          this.serverResponse = response.data
         })
         .catch(error => {
           if (!error.response) {
-            this.testResponse = error.message
+            this.serverResponse = error.message
           } else {
-            this.testResponse = error.response.data
+            this.serverResponse = error.response.data
           }
-
-          // TODO: Emit response back to parent App and show it on the screen.
+        })
+        .finally(() => {
+          // Send the response to the parent App.vue
+          this.$emit('showresult', this.serverResponse)
+          this.showServerResponse = true
         })
     }
   }
@@ -69,6 +76,7 @@ export default {
 label {
   display: block;
   margin: 20px 0 10px;
+  font-weight: bold;
 }
 input[type="text"], textarea {
   display: block;
@@ -79,6 +87,18 @@ button {
   margin-top: 10px;
   margin-bottom: 20px;
   padding: 10px;
+}
+
+#resultArea {
+  background: lightyellow;
+  padding: 1px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  max-width: 600px;
+}
+#resultLabel {
+  text-align: center;
+  font-weight: bold;
 }
 
 </style>

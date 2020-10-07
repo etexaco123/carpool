@@ -3,7 +3,6 @@
 
   <h2> Logging out ... </h2>
 
-
 </div>
 </template>
 

@@ -12,9 +12,9 @@
     <button v-on:click.prevent="testServer"> Test </button>
   </div>
 
-  <div>
-    <p> Result: </p>
-    <p> {{ testResponse }} </p>
+  <div id="resultArea" v-if="this.showServerResponse">
+    <label id="resultLabel"> Result: </label>
+    <p id="serverResponse"> {{ serverResponse }} </p>
   </div>
 
 </div>
@@ -24,26 +24,31 @@
 import axios from 'axios';
 
 export default {
+  emits: ['showresult'],
   data() {
     return {
       url: "",
-      testResponse: ""
+      serverResponse: "",
+      showServerResponse: false
     }
   },
   methods: {
     testServer: function() {
       axios.get(this.url)
         .then(response => {
-          this.testResponse = response.data
+          this.serverResponse = response.data
         })
         .catch(error => {
           if (!error.response) {
-            this.testResponse = error.message
+            this.serverResponse = error.message
           } else {
-            this.testResponse = error.response.data
+            this.serverResponse = error.response.data
           }
-
-          // TODO: Emit response back to parent App and show it on the screen.
+        })
+        .finally(() => {
+          // Send the response to the parent App.vue
+          this.$emit('showresult', this.serverResponse)
+          this.showServerResponse = true
         })
     }
   }
@@ -56,11 +61,12 @@ export default {
 }
 #test {
   margin: 20px auto;
-  max-width: 500px;
+  max-width: 400px;
 }
 label {
   display: block;
   margin: 20px 0 10px;
+  font-weight: bold;
 }
 input[type="text"], textarea {
   display: block;
@@ -70,6 +76,18 @@ input[type="text"], textarea {
 button {
   margin-bottom: 20px;
   padding: 10px;
+}
+
+#resultArea {
+  background: lightyellow;
+  padding: 1px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  max-width: 600px;
+}
+#resultLabel {
+  text-align: center;
+  font-weight: bold;
 }
 
 </style>

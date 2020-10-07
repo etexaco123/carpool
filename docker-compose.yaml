@@ -14,7 +14,7 @@ services:
    - mongo-seed
   networks:
    - wacc
-   
+
  ui: 
   build: ./ui
   container_name: ui
@@ -25,7 +25,7 @@ services:
    - 5000:5000
   networks:
    - wacc
-   
+
  ui-vue3: 
   build: ./ui-vue3
   container_name: ui-vue3
@@ -50,7 +50,7 @@ services:
    - mongodb-seed-data:/data/db
   networks:
    - wacc
-   
+
  mongosh:
   container_name: mongosh
   image: mongo:latest
@@ -62,7 +62,7 @@ services:
    - mongo-seed
   networks:
    - wacc
-  
+
  cassandra-seed:
   image: cassandra:latest
   container_name: cassandra-seed

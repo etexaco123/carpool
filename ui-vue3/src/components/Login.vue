@@ -23,17 +23,42 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   data() {
     return {
       username: "",
       password: "",
+      loginResponse: "",
       stayloggedin: false
     }
   },
   methods: {
     postLogin: function() {
-      //this.$http.post('http://0.0.0.0/login')
+      const server_host = process.env.VUE_APP_SERVER_HOST || '0.0.0.0';
+      const server_port = process.env.VUE_APP_SERVER_PORT || '5050';
+      const server_url = `http://${server_host}:${server_port}/login`
+
+      axios.post(server_url, {
+        username: this.username,
+        password: this.password
+      })
+        .then(response => {
+          this.stayloggedin = response.data
+          console.log(this.stayloggedin);
+
+          // TODO: Emit response back to parent App and show it on the screen.
+        })
+        .catch(error => {
+          if (!error.response) {
+            this.stayloggedin = error.message
+          } else {
+            this.stayloggedin = error.response.data
+          }
+
+          // TODO: Emit response back to parent App and show it on the screen.
+        })
     }
   }
 }

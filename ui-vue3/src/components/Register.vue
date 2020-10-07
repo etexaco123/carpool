@@ -45,8 +45,11 @@ export default {
           // TODO: Emit response back to parent App and show it on the screen.
         })
         .catch(error => {
-          this.registerResponse = error.response.data
-          console.log(`ERROR: ${error.response.data}`)
+          if (!error.response) {
+            this.testResponse = error.message
+          } else {
+            this.testResponse = error.response.data
+          }
 
           // TODO: Emit response back to parent App and show it on the screen.
         })

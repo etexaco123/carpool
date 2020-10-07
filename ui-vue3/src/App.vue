@@ -12,9 +12,9 @@
   
   <div id="nav">
     <router-link to="/">Home</router-link> |
-    <router-link to="/test">Test</router-link> | 
-    <router-link to="/register">Register</router-link> | 
-    <router-link to="/login">Login</router-link> | 
+    <router-link to="/test">Test</router-link> |
+    <router-link to="/register">Register</router-link> |
+    <router-link to="/login">Login</router-link> |
     <router-link to="/logout">Logout</router-link>
   </div>
 
@@ -128,6 +128,7 @@ h1 {
 }
 
 #nav a.router-link-exact-active {
-  color: #42b983;
+  color: #42e983;
 }
+
 </style>

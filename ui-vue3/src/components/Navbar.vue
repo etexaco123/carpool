@@ -64,11 +64,6 @@ export default {
     color: #191654;
 }
 
-#home-link:hover{
-    color: #191654;
-
-}
-
 .navbar-light .navbar-nav .active>.nav-link, .navbar-light .navbar-nav .nav-link.active, .navbar-light .navbar-nav .nav-link.show, .navbar-light .navbar-nav .show>.nav-link {
     color: #43C6AC;
     font-weight: bold;

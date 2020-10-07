@@ -24,7 +24,6 @@
 import axios from 'axios';
 
 export default {
-  emits: ['showresult'],
   data() {
     return {
       url: "",

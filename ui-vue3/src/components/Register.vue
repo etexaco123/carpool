@@ -36,7 +36,7 @@ export default {
   },
   methods: {
     postRegistration: function() {
-      const server_host = process.env.VUE_APP_SERVER_HOST || '0.0.0.0';
+      const server_host = process.env.VUE_APP_SERVER_HOST || '127.0.0.1';
       const server_port = process.env.VUE_APP_SERVER_PORT || '5050';
       const server_url = `http://${server_host}:${server_port}/register`
 

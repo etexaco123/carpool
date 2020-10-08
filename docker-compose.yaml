@@ -31,9 +31,9 @@ services:
   container_name: ui-vue3
   image: ui-vue3
   env_file: ./ui-vue3/.env
-  command: "yarn serve"
+  command: "nginx -g 'daemon off;'"
   ports:
-   - 8080:8080
+   - 8080:80
   networks:
    - wacc
 

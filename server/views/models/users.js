@@ -3,7 +3,7 @@ var passportLocalMongoose = require("passport-local-mongoose");
 
 //Our schema definition
 var UsersSchema = new mongoose.Schema({
-    username: String,
+    employee_id: String,
     password: String
 }, {collection: "Users"});
 

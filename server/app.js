@@ -13,6 +13,7 @@ const   express 				    = require("express")
 // Load Mongo schemas
 const   Users 					    = require("./views/models/users")
         , Employees		            = require("./views/models/employees")
+        , Drivers		            = require("./views/models/drivers")
 
 // add timestamps in front of log messages
 require('console-stamp')(console, 'HH:MM:ss.l');
@@ -181,7 +182,7 @@ app.post("/register", (req, res) => {
     }
 
     var user = new Users({
-        username: req.body.username,
+        employee_id: req.body.employee_id,
         password: req.body.password
     })
     user.save((err) => {

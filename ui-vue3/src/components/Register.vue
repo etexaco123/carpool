@@ -3,8 +3,8 @@
 
   <div id="register">
     <form>
-      <label> Username: </label>
-      <input type="text" v-model.lazy="username" required />
+      <label> Employee ID: </label>
+      <input type="text" v-model.lazy="employee_id" required />
       <label> Password: </label>
       <input type="text" v-model.lazy="password" required />
     </form>
@@ -28,7 +28,7 @@ import axios from 'axios';
 export default {
   data() {
     return {
-      username: "",
+      employee_id: "",
       password: "",
       serverResponse: "",
       showServerResponse: false
@@ -41,7 +41,7 @@ export default {
       const server_url = `http://${server_host}:${server_port}/register`
 
       axios.post(server_url, {
-        username: this.username,
+        employee_id: this.employee_id,
         password: this.password
       })
         .then(response => {

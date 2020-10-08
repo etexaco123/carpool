@@ -9,3 +9,9 @@ $MY_DIR/add-data-to-1-container.sh -v cassandra-schema -s $MY_DIR/../../conf/cas
 
 # Copy the redis configuration file.
 $MY_DIR/add-data-to-1-container.sh -v redis-conf -s $MY_DIR/../../conf/redis/.
+
+# Copy the Mongodb schema file.
+$MY_DIR/add-data-to-1-container.sh -v mongo-schema -s $MY_DIR/../../conf/mongodb/schema/.
+
+# Copy the Mongodb mock data files.
+$MY_DIR/add-data-to-1-container.sh -v mongo-mock-data -s $MY_DIR/../../conf/mongodb/mock-data/.

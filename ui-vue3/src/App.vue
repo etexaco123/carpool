@@ -3,11 +3,7 @@
 
   <div>
     <app-header v-bind:title="title" @changetitleheader="updateTitle($event)"></app-header>
-    <h2 @click="changeSubtitle"> {{ subtitle }} </h2>
-  </div>
-
-  <div>
-    <app-navbar></app-navbar>
+    <h2 id="subtitle" @click="changeSubtitle"> {{ subtitle }} </h2>
   </div>
   
   <div id="nav">
@@ -42,7 +38,6 @@ import Register from './components/Register.vue'
 import Login from './components/Login.vue'
 import Logout from './components/Logout.vue'
 import Footer from './components/Footer.vue'
-import Navbar from './components/Navbar.vue'
 
 export default {
   components: {
@@ -53,7 +48,6 @@ export default {
     'app-login': Login,
     'app-logout': Logout,
     'app-footer': Footer,
-    'app-navbar': Navbar
   },
   data() {
     return {
@@ -129,6 +123,11 @@ body {
 
 h1 {
   color: red;
+}
+
+#subtitle {
+  color: #b85;
+  margin: 30px;
 }
 
 #nav {

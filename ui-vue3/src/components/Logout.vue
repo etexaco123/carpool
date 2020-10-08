@@ -29,6 +29,7 @@ h2 {
   display: block;
   margin-top: 10px;
   margin-bottom: 100px;
+  color: #b85;
 }
 
 </style>

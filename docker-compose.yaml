@@ -42,24 +42,15 @@ services:
   image: mongo:latest
   environment:
    # Dummy log in credentials
+    MONGO_INITDB_DATABASE: wacc
     MONGO_INITDB_ROOT_USERNAME: root
     MONGO_INITDB_ROOT_PASSWORD: rootpass
   ports:
    - 27017:27017
   volumes:
    - mongodb-seed-data:/data/db
-  networks:
-   - wacc
-
- mongosh:
-  container_name: mongosh
-  image: mongo:latest
-  entrypoint: mongo mongo -u root -p rootpass
-  volumes:
    - mongo-schema:/schema
-   - mongo-historical-data:/historical-data
-  depends_on:
-   - mongo-seed
+   - mongo-mock-data:/mock-data
   networks:
    - wacc
 
@@ -188,7 +179,7 @@ volumes:
   external: true
  mongodb-seed-data:
   external: true
- mongo-historical-data:
+ mongo-mock-data:
   external: true
  cassandra-schema:
   external: true

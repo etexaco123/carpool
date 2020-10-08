@@ -3,7 +3,7 @@
 :: Create the volumes used in docker-compose
 docker volume create mongo-schema
 docker volume create mongodb-seed-data
-docker volume create mongo-historical-data
+docker volume create mongo-mock-data
 docker volume create cassandra-schema
 docker volume create cassandra-data-seed
 docker volume create cassandra-data-1

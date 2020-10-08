@@ -8,6 +8,8 @@ var UsersSchema = new mongoose.Schema({
 }, {collection: "Users"});
 
 // Import the additional functionality of passport into our schema
-UsersSchema.plugin(passportLocalMongoose);
+UsersSchema.plugin(passportLocalMongoose, {
+  usernameField: "employee_id"
+});
 
 module.exports = mongoose.model("Users", UsersSchema);

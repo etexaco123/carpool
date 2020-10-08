@@ -117,7 +117,9 @@ app.use(require("express-session")({
 app.use(passport.initialize());
 app.use(passport.session());
 //Use passport's local strategy for user authentication
-passport.use(new LocalStrategy(Users.authenticate()));
+passport.use(new LocalStrategy({
+  usernameField: "employee_id"
+}, Users.authenticate()));
 //Use the passport's methods for encoding and decoding the data of our sessions
 passport.serializeUser(Users.serializeUser());
 passport.deserializeUser(Users.deserializeUser());

@@ -1,3 +1,4 @@
+db = db.getSiblingDB("wacc")
 db.createCollection('Drivers');
 db.Drivers.insertMany([
 	{

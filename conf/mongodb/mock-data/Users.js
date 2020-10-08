@@ -1,3 +1,4 @@
+db = db.getSiblingDB("wacc")
 db.createCollection('Users');
 db.Users.insertMany([
 	{

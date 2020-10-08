@@ -20,17 +20,6 @@ services:
   container_name: ui
   image: ui
   env_file: ./ui/.env
-  command: "node app.js"
-  ports:
-   - 5000:5000
-  networks:
-   - wacc
-
- ui-vue3: 
-  build: ./ui-vue3
-  container_name: ui-vue3
-  image: ui-vue3
-  env_file: ./ui-vue3/.env
   command: "nginx -g 'daemon off;'"
   ports:
    - 8080:80

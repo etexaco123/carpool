@@ -193,7 +193,8 @@ app.post("/register", (req, res) => {
         console.log(`... User added successfully`);
     });
 
-    res.status(201).send({"message:":"created"})
+    var message = `User ${user.employee_id} created successfully!`
+    res.status(201).send(message)
 });
 
 app.get("/secret", isLoggedIn, (req, res) => {

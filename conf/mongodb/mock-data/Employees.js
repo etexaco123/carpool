@@ -1,4 +1,4 @@
-db = db.getSiblingDB("wacc")
+db = db.getSiblingDB("wacc");
 db.createCollection('Employees');
 db.Employees.insertMany([
 	{
@@ -51,4 +51,4 @@ db.Employees.insertMany([
 		age:25,
 		driver_license:false
 	}
-])
+]);

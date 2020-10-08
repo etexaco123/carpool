@@ -1,4 +1,4 @@
-db = db.getSiblingDB("wacc")
+db = db.getSiblingDB("wacc");
 db.createCollection('Users');
 db.Users.insertMany([
 	{
@@ -20,5 +20,5 @@ db.Users.insertMany([
 	{
 		employee_id:"5",
 		password:"password5"
-	},
-])
+	}
+]);

@@ -1,11 +1,9 @@
 #!/bin/bash
 
 # Create the volumes used in docker-compose
-docker volume create mongo-schema
-docker volume create mongo-mock-data
+docker volume create mongodb-schema
+docker volume create mongodb-mock-data
 docker volume create mongodb-seed-data
-docker volume create mongodb-1-data
-docker volume create mongodb-2-data
 docker volume create cassandra-schema
 docker volume create cassandra-data-seed
 docker volume create cassandra-data-1

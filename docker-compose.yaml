@@ -1,7 +1,6 @@
 version: "3.7"
 
 services:
- # Assume that the server image was already built
  server: 
   build: ./server
   hostname: server
@@ -12,7 +11,7 @@ services:
   ports:
    - 5050:5050
   depends_on:
-   - mongo-seed
+   - mongodb-seed
   networks:
    - wacc
 
@@ -28,43 +27,49 @@ services:
   networks:
    - wacc
 
- mongo-seed:
-  container_name: mongo-seed
-  image: mongo:latest
+ mongodb-seed:
+  image: docker.io/bitnami/mongodb:4.4-debian-10
+  container_name: mongodb-seed
   environment:
-   # Dummy log in credentials
-    MONGO_INITDB_DATABASE: wacc
-    MONGO_INITDB_ROOT_USERNAME: root
-    MONGO_INITDB_ROOT_PASSWORD: rootpass
-  command: "--bind_ip_all --replSet rs0"
-  ports:
-   - 27017:27017
+   MONGODB_ADVERTISED_HOSTNAME: mongodb-seed
+   MONGODB_REPLICA_SET_NAME: wacc-rs
+   MONGODB_REPLICA_SET_MODE: primary
+   MONGODB_ROOT_PASSWORD: rootpass
+   MONGODB_REPLICA_SET_KEY: rootpass
   volumes:
-   - mongodb-seed-data:/data/db
-   - mongo-schema:/schema
-   - mongo-mock-data:/mock-data
+   - mongodb-seed-data:/bitnami/mongodb
+   - mongodb-schema:/schema
+   - mongodb-mock-data:/mock-data
   networks:
    - wacc
 
- mongo-1:
-  container_name: mongo-1
-  image: mongo:latest
-  command: "--bind_ip_all --replSet rs0"
-  ports:
-   - 27011:27017
-  volumes:
-   - mongodb-1-data:/data/db
+ mongodb-1:
+  image: docker.io/bitnami/mongodb:4.4-debian-10
+  container_name: mongodb-1
+  depends_on:
+   - mongodb-seed
+  environment:
+   MONGODB_ADVERTISED_HOSTNAME: mongodb-1
+   MONGODB_REPLICA_SET_NAME: wacc-rs
+   MONGODB_REPLICA_SET_MODE: secondary
+   MONGODB_INITIAL_PRIMARY_HOST: mongodb-seed
+   MONGODB_INITIAL_PRIMARY_ROOT_PASSWORD: rootpass
+   MONGODB_REPLICA_SET_KEY: rootpass
   networks:
    - wacc
 
- mongo-2:
-  container_name: mongo-2
-  image: mongo:latest
-  command: "--bind_ip_all --replSet rs0"
-  volumes:
-   - mongodb-2-data:/data/db
-  ports:
-   - 27012:27017
+ mongodb-2:
+  image: docker.io/bitnami/mongodb:4.4-debian-10
+  container_name: mongodb-2
+  depends_on:
+   - mongodb-seed
+  environment:
+   MONGODB_ADVERTISED_HOSTNAME: mongodb-2
+   MONGODB_REPLICA_SET_NAME: wacc-rs
+   MONGODB_REPLICA_SET_MODE: secondary
+   MONGODB_INITIAL_PRIMARY_HOST: mongodb-seed
+   MONGODB_INITIAL_PRIMARY_ROOT_PASSWORD: rootpass
+   MONGODB_REPLICA_SET_KEY: rootpass
   networks:
    - wacc
 
@@ -189,15 +194,11 @@ services:
     - zookeeper
 
 volumes:
- mongo-schema:
+ mongodb-schema:
   external: true
- mongo-mock-data:
+ mongodb-mock-data:
   external: true
  mongodb-seed-data:
-  external: true
- mongodb-1-data:
-  external: true
- mongodb-2-data:
   external: true
  cassandra-schema:
   external: true

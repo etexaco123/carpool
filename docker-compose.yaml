@@ -4,6 +4,7 @@ services:
  # Assume that the server image was already built
  server: 
   build: ./server
+  hostname: server
   container_name: server
   image: server
   env_file: ./server/.env
@@ -17,6 +18,7 @@ services:
 
  ui: 
   build: ./ui
+  hostname: ui
   container_name: ui
   image: ui
   env_file: ./ui/.env
@@ -34,12 +36,35 @@ services:
     MONGO_INITDB_DATABASE: wacc
     MONGO_INITDB_ROOT_USERNAME: root
     MONGO_INITDB_ROOT_PASSWORD: rootpass
+  command: "--bind_ip_all --replSet rs0"
   ports:
    - 27017:27017
   volumes:
    - mongodb-seed-data:/data/db
    - mongo-schema:/schema
    - mongo-mock-data:/mock-data
+  networks:
+   - wacc
+
+ mongo-1:
+  container_name: mongo-1
+  image: mongo:latest
+  command: "--bind_ip_all --replSet rs0"
+  ports:
+   - 27011:27017
+  volumes:
+   - mongodb-1-data:/data/db
+  networks:
+   - wacc
+
+ mongo-2:
+  container_name: mongo-2
+  image: mongo:latest
+  command: "--bind_ip_all --replSet rs0"
+  volumes:
+   - mongodb-2-data:/data/db
+  ports:
+   - 27012:27017
   networks:
    - wacc
 
@@ -166,9 +191,13 @@ services:
 volumes:
  mongo-schema:
   external: true
+ mongo-mock-data:
+  external: true
  mongodb-seed-data:
   external: true
- mongo-mock-data:
+ mongodb-1-data:
+  external: true
+ mongodb-2-data:
   external: true
  cassandra-schema:
   external: true

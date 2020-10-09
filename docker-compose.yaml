@@ -73,6 +73,36 @@ services:
   networks:
    - wacc
 
+ mongodb-3:
+  image: docker.io/bitnami/mongodb:4.4-debian-10
+  container_name: mongodb-3
+  depends_on:
+   - mongodb-seed
+  environment:
+   MONGODB_ADVERTISED_HOSTNAME: mongodb-3
+   MONGODB_REPLICA_SET_NAME: wacc-rs
+   MONGODB_REPLICA_SET_MODE: secondary
+   MONGODB_INITIAL_PRIMARY_HOST: mongodb-seed
+   MONGODB_INITIAL_PRIMARY_ROOT_PASSWORD: rootpass
+   MONGODB_REPLICA_SET_KEY: rootpass
+  networks:
+   - wacc
+
+ mongodb-arbiter:
+  image: docker.io/bitnami/mongodb:4.4-debian-10
+  container_name: mongodb-arbiter
+  depends_on:
+   - mongodb-seed
+  environment:
+   MONGODB_ADVERTISED_HOSTNAME: mongodb-arbiter
+   MONGODB_REPLICA_SET_NAME: wacc-rs
+   MONGODB_REPLICA_SET_MODE: arbiter
+   MONGODB_INITIAL_PRIMARY_HOST: mongodb-seed
+   MONGODB_INITIAL_PRIMARY_ROOT_PASSWORD: rootpass
+   MONGODB_REPLICA_SET_KEY: rootpass
+  networks:
+   - wacc
+
  cassandra-seed:
   image: cassandra:latest
   container_name: cassandra-seed

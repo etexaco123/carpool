@@ -1,6 +1,7 @@
 'use strict';
 
 const   express 				    = require("express")
+        , enableWs                  = require('express-ws')
         , http                      = require("http")
         , url                       = require("url")
         , cors                      = require("cors")
@@ -126,16 +127,31 @@ passport.use(new LocalStrategy({
 passport.serializeUser(Users.serializeUser());
 passport.deserializeUser(Users.deserializeUser());
 
+// Enable websockets
+enableWs(app)
+
 //====================
 // ROUTES
 //====================
+
+// Websocket route(s)
+app.ws('/testwebsockets', (ws, req) => {
+    ws.on('message', msg => {
+        ws.send(msg)
+        console.log(`Message sent: ${msg}`)
+    });
+
+    ws.on('close', () => {
+        console.log('WebSocket was closed')
+    });
+});
 
 // This is a test route using for checking the connection between Server and UI.
 app.get("/test", async (req, res) => {
     console.log("Checking Server Test page");
     var payload = `Testing Server connection! [TIME: ${getDateTime()}]`
     res.send(payload);
-})
+});
 
 app.get("/", (req, res) => {
     console.log("Checking Server root page");

@@ -11,7 +11,8 @@
     <router-link to="/test">Test</router-link> |
     <router-link to="/register">Register</router-link> |
     <router-link to="/login">Login</router-link> |
-    <router-link to="/logout">Logout</router-link>
+    <router-link to="/logout">Logout</router-link> |
+    <router-link to="/testwebsockets">TestWebSockets</router-link>
   </div>
 
   <router-view v-slot="{ Component }" @showresult="showResponse($event)">
@@ -37,6 +38,7 @@ import Test from './components/Test.vue'
 import Register from './components/Register.vue'
 import Login from './components/Login.vue'
 import Logout from './components/Logout.vue'
+import TestWebSockets from './components/TestWebSockets.vue'
 import Footer from './components/Footer.vue'
 
 export default {
@@ -47,7 +49,8 @@ export default {
     'app-register': Register,
     'app-login': Login,
     'app-logout': Logout,
-    'app-footer': Footer,
+    'app-testwebsockets': TestWebSockets,
+    'app-footer': Footer
   },
   data() {
     return {
@@ -103,8 +106,8 @@ body {
     align-items: center;
     -webkit-box-pack: center;
     justify-content: center;
-    padding-top: 40px;
-    padding-bottom: 40px;
+    padding-top: 10px;
+    padding-bottom: 10px;
     /* background-color: #f5f5f5;  */
     background: #43C6AC;  /* fallback for old browsers */
     background: -webkit-linear-gradient(to left, #191654, #43C6AC);  /* Chrome 10-25, Safari 5.1-6 */
@@ -117,8 +120,8 @@ body {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 20px;
-  margin-bottom: 20px;
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
 
 h1 {
@@ -127,7 +130,7 @@ h1 {
 
 #subtitle {
   color: #b85;
-  margin: 30px;
+  margin: 20px;
 }
 
 #nav {

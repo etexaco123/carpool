@@ -9,7 +9,7 @@
   </div>
 
   <div>
-    <button v-on:click.prevent="testServer"> Test </button>
+    <button @click.prevent="testServer"> Test </button>
   </div>
 
   <div id="resultArea" v-if="this.showServerResponse">

@@ -26,7 +26,7 @@ export default {
 <style scoped>
 header{
   background: lightgreen;
-  padding: 6px 20px;
+  padding: 1px 20px;
 }
 h1{
   color: #222;

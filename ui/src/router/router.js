@@ -9,7 +9,8 @@ const router = createRouter({
     { path: '/test', name: 'Test', component: () => import('../components/Test.vue') },
     { path: '/register', name: 'Register', component: () => import('../components/Register.vue') },
     { path: '/login', name: 'Login', component: () => import('../components/Login.vue') },
-    { path: '/logout', name: 'Logout', component: () => import('../components/Logout.vue') }
+    { path: '/logout', name: 'Logout', component: () => import('../components/Logout.vue') },
+    { path: '/testwebsockets', name: 'TestWebSockets', component: () => import('../components/TestWebSockets.vue') }
   ]
 })
 

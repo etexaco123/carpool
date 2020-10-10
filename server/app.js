@@ -26,6 +26,7 @@ const DEFAULT_MONGODB_HOST = `mongo-seed`;
 const DEFAULT_MONGODB_PORT = `27017`;
 const DEFAULT_MONGODB_USERNAME = `root`;
 const DEFAULT_MONGODB_PASSWORD = `rootpass`;
+const DEFAULT_MONGODB_RS_NAME = `wacc-rs`;
 
 const mongodbHost = process.env.MONGODB_HOST || DEFAULT_MONGODB_HOST
 const mongodbPort = process.env.MONGODB_PORT || DEFAULT_MONGODB_PORT
@@ -42,7 +43,8 @@ async function connectMongodb() {
 
     const username = process.env.MONGODB_USERNAME || DEFAULT_MONGODB_USERNAME
     const password = process.env.MONGODB_PASSWORD || DEFAULT_MONGODB_PASSWORD
-    const uri = `mongodb://${username}:${password}@${mongodbHost}:${mongodbPort}/`;
+    const rsName = process.env.MONGODB_RS_NAME || DEFAULT_MONGODB_RS_NAME
+    const uri = `mongodb://${username}:${password}@${mongodbHost}:${mongodbPort}/?replicaSet=${rsName}`;
 
     //Set up the connection to the db
     mongoose.connect(uri, {

@@ -80,8 +80,10 @@ export default {
       this.sendBase("connect", false);
     },
     sendMessage: function() {
-      this.sendBase("message", true);
-      this.message = ""
+      if (this.message) {
+        this.sendBase("message", true);
+        this.message = ""
+      }
     },
     sendBase: function(type, showMessage) {
       if (!this.connection) {

@@ -11,8 +11,8 @@
     <router-link to="/test">Test</router-link> |
     <router-link to="/register">Register</router-link> |
     <router-link to="/login">Login</router-link> |
-    <router-link to="/logout">Logout</router-link> |
-    <router-link to="/testwebsockets">TestWebSockets</router-link>
+    <router-link to="/chat">Chat</router-link> |
+    <router-link to="/logout">Logout</router-link>
   </div>
 
   <router-view v-slot="{ Component }" @showresult="showResponse($event)">
@@ -38,7 +38,7 @@ import Test from './components/Test.vue'
 import Register from './components/Register.vue'
 import Login from './components/Login.vue'
 import Logout from './components/Logout.vue'
-import TestWebSockets from './components/TestWebSockets.vue'
+import Chat from './components/Chat.vue'
 import Footer from './components/Footer.vue'
 
 export default {
@@ -49,7 +49,7 @@ export default {
     'app-register': Register,
     'app-login': Login,
     'app-logout': Logout,
-    'app-testwebsockets': TestWebSockets,
+    'app-chat': Chat,
     'app-footer': Footer
   },
   data() {
@@ -108,10 +108,9 @@ body {
     justify-content: center;
     padding-top: 10px;
     padding-bottom: 10px;
-    /* background-color: #f5f5f5;  */
     background: #43C6AC;  /* fallback for old browsers */
-    background: -webkit-linear-gradient(to left, #191654, #43C6AC);  /* Chrome 10-25, Safari 5.1-6 */
-    background: linear-gradient(to left, #191654, #43C6AC); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    background: -webkit-linear-gradient(to left, #035BA8, #43C6AC);  /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to left, #035BA8, #43C6AC); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 }
 
 #app {

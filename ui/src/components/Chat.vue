@@ -1,33 +1,25 @@
 <template>
 <div>
 
-  <div id="testWebSocketsConnect">
+  <div id="chatConnect" v-if="!connection">
     <form>
       <label> WebSocket Connection: </label>
-      <input type="text" v-model.lazy="url" placeholder="ws://localhost:5050/testwebsockets" required />
+      <input type="text" v-model.lazy="url" placeholder="ws://localhost:5050/chat" required />
       <input type="text" v-model.lazy="name" placeholder="John" required />
     </form>
-  </div>
-
-  <div>
     <button @click.prevent="connectWebSocket"> Connect </button>
   </div>
 
-  <div id="testWebSocketsMessage">
-    <form>
-      <label> Message: </label>
-      <input type="text" v-model.lazy="message" placeholder="Say something ..." required />
-    </form>
-  </div>
-
-  <div>
+  <div id="chatMessage" v-if="!!connection">
+    <textarea readonly id="chatArea" v-model="chatArea" rows=20 resize=none> Something </textarea>
+    <input type="text" v-model.lazy="message" placeholder="Say something ..." required />
     <button @click.prevent="sendMessage"> Send message </button>
   </div>
 
   <div id="resultAreaWS">
     <label id="resultLabelWS"> Current client_id: </label>
     <p id="serverResponseWS"> {{ client_id }} </p>
-    <label id="resultLabelWS"> Result: </label>
+    <label id="resultLabelWS"> Sever's latest response: </label>
     <p id="serverResponseWS"> {{ serverResponseWS }} </p>
   </div>
 
@@ -38,10 +30,13 @@
 export default {
   data() {
     return {
+      default_url: "ws://localhost:5050/chat",
+      default_name: "John",
       client_id: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
       url: "",
       name: "",
       message: "",
+      chatArea: "",
       serverResponseWS: "",
       connection: null
     }
@@ -49,6 +44,14 @@ export default {
   methods: {
     connectWebSocket: function() {
       console.log("Starting connection to WebSocket Server...")
+      if (!this.url) {
+        console.log(`Empty URL, using default: ${this.default_url}`)
+        this.url = this.default_url
+      }
+      if (!this.name) {
+        console.log(`Empty Name, using default: ${this.default_name}`)
+        this.name = this.default_name
+      }
       this.connection = new WebSocket(this.url)
 
       // Connection handlers
@@ -60,9 +63,10 @@ export default {
         this.sendConnect();
       }
       this.connection.onmessage = (event) => {
-        const { msg } = JSON.parse(event.data)
-        console.log(`Received server message: ${msg}`)
-        this.serverResponseWS = msg
+        const { name, msg } = JSON.parse(event.data)
+        console.log(`Received server message from ${name}: ${msg}`)
+        this.serverResponseWS = `${msg} (${name})`
+        this.chatArea += name + ': ' + msg + '\n' 
       }
       this.connection.onerror = (event) => {
         console.log(`Websocket error`)
@@ -77,34 +81,41 @@ export default {
     },
     sendMessage: function() {
       this.sendBase("message", true);
+      this.message = ""
     },
     sendBase: function(type, showMessage) {
-      if (showMessage) console.log(`Sending message: "${this.message}"`)
-      if (this.connection) {
-        const msgObj = `{"type": "${type}", "client_id": "${this.client_id}", "name": "${this.name}", "msg": "${this.message}"}`
-        this.connection.send(msgObj);
-      } else {
+      if (!this.connection) {
         console.log(`ERROR: Could not send message type [${type}] because connection is down!`);
+        return false;
       }
+      if (showMessage) console.log(`Sending message: "${this.message}"`)
+      const msgObj = `{"type": "${type}", "client_id": "${this.client_id}", "name": "${this.name}", "msg": "${this.message}"}`
+      this.connection.send(msgObj);
+      return true;
     }
   }
 }
 </script>
 
 <style scoped>
-#testWebSocketsConnect * {
+#chatConnect * {
   box-sizing: border-box;
 }
-#testWebSocketsConnect {
+#chatConnect {
   margin: 20px auto;
   max-width: 400px;
 }
-#testWebSocketsMessage * {
+#chatMessage * {
   box-sizing: border-box;
 }
-#testWebSocketsMessage {
+#chatMessage {
   margin: 20px auto;
   max-width: 400px;
+}
+#chatArea {
+  margin: 20px auto;
+  max-width: 400px;
+  resize: none;
 }
 label {
   display: block;
@@ -117,6 +128,7 @@ input[type="text"], textarea {
   padding: 8px;
 }
 button {
+  margin-top: 20px;
   margin-bottom: 20px;
   padding: 10px;
 }

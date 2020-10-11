@@ -55,7 +55,7 @@ async function connectMongodb() {
         useCreateIndex: true,
         dbName: mongodbName
     }).then((MongooseNode) => {
-        console.log('Connected to DB!');
+        console.log('Connected to MongoDB!');
         
         // /* Use the default nativeConnection object since my connection object uses a single hostname and port.
         //    Iterate here if you work with multiple hostnames in the connection object */
@@ -135,7 +135,7 @@ const wsInstance = enableWs(app)
 //====================
 
 // Websocket route(s)
-app.ws('/testwebsockets', (ws, req) => {
+app.ws('/chat', (ws, req) => {
     const wss = wsInstance.getWss();
     ws.on('message', (msgObj) => {
         console.log('')
@@ -150,7 +150,7 @@ app.ws('/testwebsockets', (ws, req) => {
             console.log(`Received message from: ${name}`)
             console.log(`Message: ${msg}`)
             console.log(`Broadcasting...`)
-            const newMessage = `{"msg": "Server message: ${msg}"}`
+            const newMessage = `{"name": "${name}", "msg": "${msg}"}`
             wss.clients.forEach(function each(client) {
                 if (client.readyState === 1) { // if it's OPEN
                     console.log(` - Sending message to client: ${client.id}`)
@@ -276,42 +276,6 @@ function isLoggedIn(req, res, next){
     res.redirect("/login");
 }
 
-
-//// Simple Server, but this may not work properly with sockets.
-
-
-// // Start the server
-// http.createServer((request, response) => {
-//     if (request.method == 'POST') {
-//         var body = '';
-//         request.on('data', (data) => {
-//             body += data;
-//             // 1e6 === 1 * Math.pow(10, 6) === 1 * 1000000 ~~~ 1MB
-//             if (body.length > 1e6) { 
-//                 // FLOOD ATTACK OR FAULTY CLIENT, NUKE REQUEST
-//                 response.status(413);
-//                 response.send('Chunk too large!');
-//                 request.connection.destroy();
-//             }
-//         });
-//         request.on('end', () => {
-
-//             var data = JSON.parse(body);
-//             // use POST
-//             console.log(`Data: ${data}`);
-            
-//         });
-
-//     } else if (request.method == `GET`) {
-//         console.log('Server received a GET request!');
-//         var resultToSend = `{"Result":"Received test GET request"}`;
-//         response.writeHead(200, {"Content-Type": "application/json"});
-//         // response.write(data); // You Can Call Response.write Infinite Times BEFORE response.end
-//         response.end(resultToSend);
-//     }
-
-// }).listen(port)
-
 //====================
 // Run the applicatin
 //====================
@@ -322,12 +286,3 @@ app.listen(port, host);
 connectMongodb().catch(console.error);
 
 console.log(`Running on http://${host}:${port}`);
-
-//====================
-// Use Websockets
-// //===================
-// var wss = new WebSocketServer({server: server});
-
-// wss.on("connection", function(ws){
-//    // ...
-// });

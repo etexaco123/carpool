@@ -140,7 +140,6 @@ app.ws('/testwebsockets', (ws, req) => {
     ws.on('message', (msgObj) => {
         console.log('')
         const { type, client_id, name, msg } = JSON.parse(msgObj);
-        console.log(`MESSAGE TYPE: ${type}`);
         if (type == "connect") {
             console.log(`New connection from: ${client_id}`)
             wss.clients.forEach(function each(client) {

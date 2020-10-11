@@ -3,8 +3,9 @@
 
   <div id="testWebSocketsConnect">
     <form>
-      <label> URL WebSockets: </label>
+      <label> WebSocket Connection: </label>
       <input type="text" v-model.lazy="url" placeholder="ws://localhost:5050/testwebsockets" required />
+      <input type="text" v-model.lazy="name" placeholder="John" required />
     </form>
   </div>
 
@@ -23,9 +24,11 @@
     <button @click.prevent="sendMessage"> Send message </button>
   </div>
 
-  <div id="resultArea">
-    <label id="resultLabel"> Result: </label>
-    <p id="serverResponse"> {{ serverResponse }} </p>
+  <div id="resultAreaWS">
+    <label id="resultLabelWS"> Current client_id: </label>
+    <p id="serverResponseWS"> {{ client_id }} </p>
+    <label id="resultLabelWS"> Result: </label>
+    <p id="serverResponseWS"> {{ serverResponseWS }} </p>
   </div>
 
 </div>
@@ -35,9 +38,11 @@
 export default {
   data() {
     return {
+      client_id: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
       url: "",
+      name: "",
       message: "",
-      serverResponse: "",
+      serverResponseWS: "",
       connection: null
     }
   },
@@ -46,30 +51,41 @@ export default {
       console.log("Starting connection to WebSocket Server...")
       this.connection = new WebSocket(this.url)
 
-      this.connection.onmessage = function(event) {
-        console.log(event);
+      // Connection handlers
+      this.connection.onopen = () => {
+        console.log("Successfully connected to the websocket server!")
+        this.serverResponseWS = "Successfully connected to the websocket server!"
+        
+        // Send initial connection message
+        this.sendConnect();
       }
-
-      this.connection.onopen = function(event) {
-        console.log("Successfully connected to the websocket server...")
-        console.log(event)
+      this.connection.onmessage = (event) => {
+        const { msg } = JSON.parse(event.data)
+        console.log(`Received server message: ${msg}`)
+        this.serverResponseWS = msg
       }
-
-      this.connection.onerror = function(event) {
+      this.connection.onerror = (event) => {
         console.log(`Websocket error`)
         console.log(event)
       }
-
-      this.connection.onclose = function(event) {
-        console.log(`Websocket closed`)
-        console.log(event)
+      this.connection.onclose = () => {
+        console.log(`Server Websocket closed`)
       }
     },
+    sendConnect: function() {
+      this.sendBase("connect", false);
+    },
     sendMessage: function() {
-      console.log(`Sending message: "${this.message}"`)
-      console.log(this.connection);
-      if (this.connection) this.connection.send(this.message);
-      else console.log(`ERROR: Could not send message because connection is down!`);
+      this.sendBase("message", true);
+    },
+    sendBase: function(type, showMessage) {
+      if (showMessage) console.log(`Sending message: "${this.message}"`)
+      if (this.connection) {
+        const msgObj = `{"type": "${type}", "client_id": "${this.client_id}", "name": "${this.name}", "msg": "${this.message}"}`
+        this.connection.send(msgObj);
+      } else {
+        console.log(`ERROR: Could not send message type [${type}] because connection is down!`);
+      }
     }
   }
 }
@@ -105,14 +121,14 @@ button {
   padding: 10px;
 }
 
-#resultArea {
+#resultAreaWS {
   background: lightyellow;
   padding: 1px;
   margin-top: 10px;
   margin-bottom: 10px;
   max-width: 600px;
 }
-#resultLabel {
+#resultLabelWS {
   text-align: center;
   font-weight: bold;
 }

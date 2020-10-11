@@ -128,7 +128,7 @@ passport.serializeUser(Users.serializeUser());
 passport.deserializeUser(Users.deserializeUser());
 
 // Enable websockets
-enableWs(app)
+const wsInstance = enableWs(app)
 
 //====================
 // ROUTES
@@ -136,13 +136,38 @@ enableWs(app)
 
 // Websocket route(s)
 app.ws('/testwebsockets', (ws, req) => {
-    ws.on('message', msg => {
-        ws.send(msg)
-        console.log(`Message sent: ${msg}`)
+    const wss = wsInstance.getWss();
+    ws.on('message', (msgObj) => {
+        console.log('')
+        const { type, client_id, name, msg } = JSON.parse(msgObj);
+        console.log(`MESSAGE TYPE: ${type}`);
+        if (type == "connect") {
+            console.log(`New connection from: ${client_id}`)
+            wss.clients.forEach(function each(client) {
+                // Add id if it doesn't exist
+                if (!client.id) client.id = client_id
+            });
+        } else {
+            console.log(`Received message from: ${name}`)
+            console.log(`Message: ${msg}`)
+            console.log(`Broadcasting...`)
+            const newMessage = `{"msg": "Server message: ${msg}"}`
+            wss.clients.forEach(function each(client) {
+                if (client.readyState === 1) { // if it's OPEN
+                    console.log(` - Sending message to client: ${client.id}`)
+                    client.send(newMessage);
+                }
+            });
+            console.log(`Message broadcasted successfully to all clients!`)
+        }
     });
 
     ws.on('close', () => {
         console.log('WebSocket was closed')
+    });
+
+    ws.on('error', (error) => {
+        console.log(`Websockets error: ${error}`);
     });
 });
 
@@ -298,3 +323,12 @@ app.listen(port, host);
 connectMongodb().catch(console.error);
 
 console.log(`Running on http://${host}:${port}`);
+
+//====================
+// Use Websockets
+// //===================
+// var wss = new WebSocketServer({server: server});
+
+// wss.on("connection", function(ws){
+//    // ...
+// });

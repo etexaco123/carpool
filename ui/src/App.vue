@@ -15,7 +15,7 @@
     <router-link to="/logout">Logout</router-link>
   </div>
 
-  <router-view v-slot="{ Component }" @showresult="showResponse($event)">
+  <router-view v-slot="{ Component }">
     <component :is="Component" />
   </router-view>
 
@@ -81,15 +81,6 @@ export default {
         this.subtitle = this.subtitle_wacc
 
       this.toggle2 = !this.toggle2
-    },
-    showResponse: function(result) {
-      this.response = result
-      console.log(`RECEIVED RESULT: ${result}`)
-
-      //// Don't show it just yet at the parent level
-      //if (this.response) {
-      //  this.isResponseShowable = true
-      //}
     }
   }
 }

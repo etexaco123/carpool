@@ -62,8 +62,6 @@ export default {
           }
         })
         .finally(() => {
-          // Send the response to the parent App.vue
-          this.$emit('showresult', this.serverResponse)
           this.showServerResponse = true
         })
     }

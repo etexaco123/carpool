@@ -26,6 +26,7 @@ import axios from 'axios';
 export default {
   data() {
     return {
+      default_url: "http://localhost:5050/test",
       url: "",
       serverResponse: "",
       showServerResponse: false
@@ -33,6 +34,10 @@ export default {
   },
   methods: {
     testServer: function() {
+      if (!this.url) {
+        console.log(`Empty URL, using default: ${this.default_url}`)
+        this.url = this.default_url
+      }
       axios.get(this.url)
         .then(response => {
           this.serverResponse = response.data

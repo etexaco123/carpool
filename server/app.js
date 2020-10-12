@@ -241,10 +241,6 @@ app.post("/register", (req, res) => {
     res.status(201).send(message)
 });
 
-app.get("/secret", isLoggedIn, (req, res) => {
-    res.render("secret");
-    console.log("Checking Server secret page");
-});
 
 
 //====================

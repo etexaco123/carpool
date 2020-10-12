@@ -7,9 +7,6 @@ const   express 				    = require("express")
         , cors                      = require("cors")
         , mongoose 				    = require("mongoose")
         , bodyParser 			    = require("body-parser")
-        , passport 				    = require("passport")
-        , LocalStrategy 			= require("passport-local")
-        , passportLocalMongoose 	= require("passport-local-mongoose")
 
 // Load Mongo schemas
 const   Users 					    = require("./views/models/users")
@@ -105,8 +102,6 @@ var app = express();
 app.use(cors());
 //Needed to be able to run contents of public dir like css file
 app.use(express.static("public"));
-//Set view engine to be embedded JS
-app.set('view engine', 'ejs');
 //Needed for posting data into a request
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
@@ -116,16 +111,6 @@ app.use(require("express-session")({
     resave: false,
     saveUninitialized: false
 }));
-//Required methods to be able to use passport mongoose plugin
-app.use(passport.initialize());
-app.use(passport.session());
-//Use passport's local strategy for user authentication
-passport.use(new LocalStrategy({
-  usernameField: "employee_id"
-}, Users.authenticate()));
-//Use the passport's methods for encoding and decoding the data of our sessions
-passport.serializeUser(Users.serializeUser());
-passport.deserializeUser(Users.deserializeUser());
 
 // Enable websockets
 const wsInstance = enableWs(app)
@@ -261,37 +246,6 @@ app.get("/secret", isLoggedIn, (req, res) => {
     console.log("Checking Server secret page");
 });
 
-//LOGIN ROUTES
-// Render Log In form
-app.get("/login", (req, res) => {
-    res.render("login");
-});
-//User Log In handling
-app.post("/login", passport.authenticate("local", {
-    successRedirect: "/secret",
-    failureRedirect: "/login"
-}), (req, res) => {
-});
-
-//LOGOUT ROUTE
-app.get("/logout", (req, res) => {
-    req.logout();
-    console.log("Server: Logging out and redirecting to root ...");
-    res.redirect("/");
-});
-
-//SEARCH ROUTE
-app.get("/search", (req, res) => {
-    res.render("search");
-    console.log("Checking Server search page");
-});
-
-function isLoggedIn(req, res, next){
-    if(req.isAuthenticated()){
-        return next();
-    }
-    res.redirect("/login");
-}
 
 //====================
 // Run the applicatin

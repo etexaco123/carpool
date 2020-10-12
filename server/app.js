@@ -227,10 +227,10 @@ app.post("/register", (req, res) => {
         return res.status(503).send('MongoDB connection is yet initialized. Try again in a few moments. ');
     }
 
-    var user = new Users({
+    const user = new Users({
         employee_id: req.body.employee_id,
         password: req.body.password
-    })
+    });
     user.save((err) => {
         console.log(`Inserting data into Mongodb ...`);
         if (err) return res.status(500).send(err);
@@ -238,6 +238,58 @@ app.post("/register", (req, res) => {
     });
 
     var message = `User ${user.employee_id} created successfully!`
+    res.status(201).send(message)
+});
+app.post("/employees", (req, res) => {
+    console.log("Server: Registering...");
+    if (mongoose.connection.readyState == 0) {
+        return res.status(500).send('No DB connection!');
+    } else if(mongoose.connection.readyState == 2 || 
+              mongoose.connection.readyState == 3) {
+        return res.status(503).send('MongoDB connection is yet initialized. Try again in a few moments. ');
+    }
+
+    const employee = new Employees({
+        employee_id: req.body.employee_id,
+        first_name: req.body.first_name,
+        last_name: req.body.last_name,
+        address: req.body.address,
+        job_title: req.body.job_title,
+        age: req.body.age,
+        driver_license: req.body.driver_license
+    });
+    employee.save((err) => {
+        console.log(`Inserting data into Mongodb ...`);
+        if (err) return res.status(500).send(err);
+        console.log(`... Employee added successfully`);
+    });
+
+    var message = `Employee ${employee.employee_id} added successfully!`
+    res.status(201).send(message)
+});
+app.post("/drivers", (req, res) => {
+    console.log("Server: Registering...");
+    if (mongoose.connection.readyState == 0) {
+        return res.status(500).send('No DB connection!');
+    } else if(mongoose.connection.readyState == 2 || 
+              mongoose.connection.readyState == 3) {
+        return res.status(503).send('MongoDB connection is yet initialized. Try again in a few moments. ');
+    }
+
+    const driver = new Drivers({
+        employee_id: req.body.employee_id,
+        first_name: req.body.first_name,
+        last_name: req.body.last_name,
+        car_model: req.body.car_model,
+        car_image_id: req.body.car_image_id
+    });
+    driver.save((err) => {
+        console.log(`Inserting data into Mongodb ...`);
+        if (err) return res.status(500).send(err);
+        console.log(`... Driver added successfully`);
+    });
+
+    var message = `Driver ${driver.employee_id} added successfully!`
     res.status(201).send(message)
 });
 

@@ -22,6 +22,9 @@
       <label> Job Title </label>
       <input type="text" v-model.lazy="employee.job_title" required />
       <br>
+      <label> E-mail </label>
+      <input type="text" v-model.lazy="employee.email" required />
+      <br>
       <label> Age </label>
       <input type="text" v-model.lazy="employee.age" required />
       <br>
@@ -29,7 +32,7 @@
       <input type="text" v-model.lazy="employee.driver_license" required />
       <br>
 
-      <button> Add {{ object.name }} </button>
+      <button @click.prevent="postEmployee"> Add {{ object.name }} </button>
     </form>
   </div>
 
@@ -44,14 +47,14 @@
       <span><label> Last Name </label></span>
       <input type="text" v-model.lazy="driver.last_name" required />
       <br>
-      <span><label> Car Model </label></span>
-      <input type="text" v-model.lazy="driver.car_model" required />
+      <span><label> Car Make </label></span>
+      <input type="text" v-model.lazy="driver.car_make" required />
       <br>
       <span><label> Car Image ID </label></span>
       <input type="text" v-model.lazy="driver.car_image_id" required />
       <br>
 
-      <button> Add {{ object.name }} </button>
+      <button @click.prevent="postDriver"> Add {{ object.name }} </button>
     </form>
   </div>
 
@@ -77,6 +80,7 @@ export default {
         last_name: "",
         address: "",
         job_title: "",
+        email: "",
         age: "",
         driver_license: ""
       },
@@ -84,7 +88,7 @@ export default {
         employee_id: "",
         first_name: "",
         last_name: "",
-        car_model: "",
+        car_make: "",
         car_image_id: ""
       },
 
@@ -97,7 +101,7 @@ export default {
         {name: "Driver"}
       ],
       object: {
-        name: 'Select Type'
+        name: "Select Type"
       }
     }
   },
@@ -105,13 +109,11 @@ export default {
     "dropdown": dropdown
   },
   methods: {
-    postEmployees: function() {
-      const data = `{}`;
-      this.postData("employees", data)
+    postEmployee: function() {
+      this.postData("employees", this.employee)
     },
-    postDrivers: function() {
-      const data = `{}`;
-      this.postData("drivers", data)
+    postDriver: function() {
+      this.postData("drivers", this.driver)
     },
     postData: function(type, data) {
       const server_host = process.env.VUE_APP_SERVER_HOST || '127.0.0.1';
@@ -143,7 +145,7 @@ export default {
 <style scoped>
 #dropDownSelection {
   margin-top: 0px;
-  margin-bottom: 0px;
+  margin-bottom: 20px;
 }
 #addEmployeeInfo * {
   box-sizing: border-box;

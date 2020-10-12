@@ -1,6 +1,6 @@
 <template>
   <footer>
-    <p> Copyright &copy; 2020, {{ title }}'s footer </p>
+    <p> Copyright &copy; 2020, {{ title }} </p>
   </footer>
 </template>
 

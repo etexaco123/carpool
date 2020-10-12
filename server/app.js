@@ -215,6 +215,23 @@ app.get("/employees", async (req, res) => {
 
 });
 
+app.get("/drivers", async (req, res) => {
+    console.log(`Fetching Drivers on the Server side [TIME: ${getDateTime()}]`);
+    if (mongoose.connection.readyState == 0) {
+        return res.status(500).send('No DB connection!');
+    } else if(mongoose.connection.readyState == 2 || 
+              mongoose.connection.readyState == 3) {
+        return res.status(503).send('MongoDB connection is yet initialized. Try again in a few moments. ');
+    }
+
+    // Retrieve the documents as quick as possible, use "lean"
+    Drivers.find().lean().exec((err, drivers) => {
+        if (err) return res.status(500).send(err)
+        res.status(200).send(drivers)
+    })
+
+});
+
 //User Sign Up handling
 app.post("/register", (req, res) => {
     console.log("Server: Registering...");

@@ -11,7 +11,7 @@
   </div>
 
   <div>
-    <button @click.prevent="postRegistration"> Submit </button>
+    <button @click.prevent="postRegistration"> Register </button>
   </div>
 
   <div id="resultArea" v-if="this.showServerResponse">
@@ -57,6 +57,9 @@ export default {
         .finally(() => {
           this.showServerResponse = true
         })
+
+      this.employee_id = ""
+      this.password = ""
     }
   }
 }

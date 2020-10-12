@@ -7,11 +7,8 @@
       <input type="text" v-model.lazy="employee_id" required />
       <label> Password: </label>
       <input type="text" v-model.lazy="password" required />
+      <button @click.prevent="postRegistration"> Register </button>
     </form>
-  </div>
-
-  <div>
-    <button @click.prevent="postRegistration"> Register </button>
   </div>
 
   <div id="resultArea" v-if="this.showServerResponse">
@@ -84,11 +81,10 @@ input[type="text"], textarea {
   padding: 8px;
 }
 button {
-  margin-top: 10px;
+  margin-top: 20px;
   margin-bottom: 20px;
   padding: 10px;
 }
-
 #resultArea {
   background: lightyellow;
   padding: 1px;

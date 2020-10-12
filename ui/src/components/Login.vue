@@ -7,16 +7,12 @@
       <input type="text" v-model.lazy="employee_id" required />
       <label> Password: </label>
       <input type="text" v-model.lazy="password" required />
+      <div id="checkboxes">
+        <label> Stay logged in </label>
+        <input type="checkbox" value="true" v-model="stayloggedin" />
+      </div>
+      <button @click.prevent="postLogin"> Log in </button>
     </form>
-  </div>
-  
-  <div id="checkboxes">
-    <label> Stay logged in </label>
-    <input type="checkbox" value="true" v-model="stayloggedin" />
-  </div>
-
-  <div>
-    <button @click.prevent="postLogin"> Log in </button>
   </div>
 
   <div id="resultArea" v-if="this.showServerResponse">
@@ -79,7 +75,8 @@ export default {
 }
 label {
   display: block;
-  margin: 10px 0 10px;
+  margin-top: 20px;
+  margin-bottom: 10px;
   font-weight: bold;
 }
 input[type="text"], textarea {
@@ -87,19 +84,23 @@ input[type="text"], textarea {
   width: 100%;
   padding: 8px;
 }
+#checkboxes {
+  margin-top: 20px;
+}
 #checkboxes input {
   display: inline-block;
   margin-right: 10px;
 }
 #checkboxes label {
   display: inline-block;
+  margin-top: 0px;
+  margin-right: 10px;
 }
 button {
   margin-top: 10px;
   margin-bottom: 20px;
   padding: 10px;
 }
-
 #resultArea {
   background: lightyellow;
   padding: 1px;

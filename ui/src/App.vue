@@ -5,12 +5,13 @@
     <app-header v-bind:title="title" @changetitleheader="updateTitle($event)"></app-header>
     <h2 id="subtitle" @click="changeSubtitle"> {{ subtitle }} </h2>
   </div>
-  
+
   <div id="nav">
     <router-link to="/">Home</router-link> |
     <router-link to="/test">Test</router-link> |
     <router-link to="/register">Register</router-link> |
     <router-link to="/login">Login</router-link> |
+    <router-link to="/manageEmployees">Manage Employees</router-link> |
     <router-link to="/chat">Chat</router-link> |
     <router-link to="/logout">Logout</router-link>
   </div>
@@ -36,6 +37,7 @@ import Header from './components/Header.vue'
 import Home from './components/Home.vue'
 import Test from './components/Test.vue'
 import Register from './components/Register.vue'
+import ManageEmployees from './components/ManageEmployees.vue'
 import Login from './components/Login.vue'
 import Logout from './components/Logout.vue'
 import Chat from './components/Chat.vue'
@@ -47,6 +49,7 @@ export default {
     'app-home': Home,
     'app-test': Test,
     'app-register': Register,
+    'app-manage-employees': ManageEmployees,
     'app-login': Login,
     'app-logout': Logout,
     'app-chat': Chat,
@@ -103,7 +106,6 @@ body {
     background: -webkit-linear-gradient(to left, #035BA8, #43C6AC);  /* Chrome 10-25, Safari 5.1-6 */
     background: linear-gradient(to left, #035BA8, #43C6AC); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 }
-
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -113,25 +115,20 @@ body {
   margin-top: 10px;
   margin-bottom: 10px;
 }
-
 h1 {
   color: red;
 }
-
 #subtitle {
   color: #b85;
   margin: 20px;
 }
-
 #nav {
   padding: 30px;
 }
-
 #nav a {
   font-weight: bold;
   color: #2c3e50;
 }
-
 #nav a.router-link-exact-active {
   color: #42e983;
 }

@@ -8483,6 +8483,11 @@ vm-browserify@^1.0.1:
   resolved "https://registry.yarnpkg.com/vm-browserify/-/vm-browserify-1.1.2.tgz#78641c488b8e6ca91a75f511e7a3b32a86e5dda0"
   integrity sha512-2ham8XPWTONajOR0ohOKOHXkm3+gaBmGut3SRuu75xLd/RRaY6vqgh8NBYYk7+RW3u5AtzPQZG8F10LHkl0lAQ==
 
+vue-dropdowns@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/vue-dropdowns/-/vue-dropdowns-1.1.1.tgz#378cdd1f708430c946480bfce730117d3abc424a"
+  integrity sha512-QrdW52Kf/i9FLNk0b7Kussw3BO4anMkLEdzwaXgNWssegFvHKGyn/gYV0srHsjE/OxZ4xGa1lqU8bYysww4HQQ==
+
 vue-eslint-parser@^7.1.0:
   version "7.1.0"
   resolved "https://registry.yarnpkg.com/vue-eslint-parser/-/vue-eslint-parser-7.1.0.tgz#9cdbcc823e656b087507a1911732b867ac101e83"

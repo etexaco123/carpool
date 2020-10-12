@@ -5,11 +5,8 @@
     <form>
       <label> URL: </label>
       <input type="text" v-model.lazy="url" placeholder="http://localhost:5050/test" required />
+      <button @click.prevent="testServer"> Test </button>
     </form>
-  </div>
-
-  <div>
-    <button @click.prevent="testServer"> Test </button>
   </div>
 
   <div id="resultArea" v-if="this.showServerResponse">
@@ -50,8 +47,6 @@ export default {
           }
         })
         .finally(() => {
-          // Send the response to the parent App.vue
-          this.$emit('showresult', this.serverResponse)
           this.showServerResponse = true
         })
     }
@@ -78,10 +73,10 @@ input[type="text"], textarea {
   padding: 8px;
 }
 button {
+  margin-top: 20px;
   margin-bottom: 20px;
   padding: 10px;
 }
-
 #resultArea {
   background: lightyellow;
   padding: 1px;

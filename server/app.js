@@ -7,6 +7,7 @@ const   express 				    = require("express")
         , cors                      = require("cors")
         , mongoose 				    = require("mongoose")
         , bodyParser 			    = require("body-parser")
+        , cassandra                 = require("cassandra-driver")
 
 // Load Mongo schemas
 const   Users 					    = require("./views/models/users")
@@ -19,26 +20,30 @@ require('console-stamp')(console, 'HH:MM:ss.l');
 // Constants
 const DEFAULT_PORT = 5050;
 const DEFAULT_HOST = `0.0.0.0`;
+
 const DEFAULT_MONGODB_NAME = `wacc`
-const DEFAULT_MONGODB_HOST = `mongo-seed`;
+const DEFAULT_MONGODB_HOST = `mongodb-seed`;
 const DEFAULT_MONGODB_PORT = `27017`;
 const DEFAULT_MONGODB_USERNAME = `root`;
 const DEFAULT_MONGODB_PASSWORD = `rootpass`;
 const DEFAULT_MONGODB_RS_NAME = `wacc-rs`;
 
-const mongodbHost = process.env.MONGODB_HOST || DEFAULT_MONGODB_HOST
-const mongodbPort = process.env.MONGODB_PORT || DEFAULT_MONGODB_PORT
-const mongodbName = process.env.MONGODB_NAME || DEFAULT_MONGODB_NAME
+const DEFAULT_CASSANDRADB_HOST = `cassandra-seed`;
+const DEFAULT_CASSANDRADB_PORT = `9042`;
+const DEFAULT_CASSANDRADB_USERNAME = `root`;
+const DEFAULT_CASSANDRADB_PASSWORD = `rootpass`;
+const DEFAULT_CASSANDRADB_KEYSPACE = `wacc`;
 
 const port = process.env.PORT || DEFAULT_PORT;
 const host = process.env.HOST || DEFAULT_HOST;
 
-//var Employees = null
-
 // Mongodb setup
-async function connectMongodb() {
-    console.log(`Trying to connect to Mongodb ...`);
-
+async function connectMongoDB() {
+    console.log(`Trying to connect to MongoDB ...`);
+        
+    const mongodbHost = process.env.MONGODB_HOST || DEFAULT_MONGODB_HOST
+    const mongodbPort = process.env.MONGODB_PORT || DEFAULT_MONGODB_PORT
+    const mongodbName = process.env.MONGODB_NAME || DEFAULT_MONGODB_NAME
     const username = process.env.MONGODB_USERNAME || DEFAULT_MONGODB_USERNAME
     const password = process.env.MONGODB_PASSWORD || DEFAULT_MONGODB_PASSWORD
     const rsName = process.env.MONGODB_RS_NAME || DEFAULT_MONGODB_RS_NAME
@@ -51,43 +56,52 @@ async function connectMongodb() {
         useFindAndModify: false,
         useCreateIndex: true,
         dbName: mongodbName
-    }).then((MongooseNode) => {
-        console.log('Connected to MongoDB!');
-        
-        // /* Use the default nativeConnection object since my connection object uses a single hostname and port.
-        //    Iterate here if you work with multiple hostnames in the connection object */
-        // const nativeConnection =  MongooseNode.connections[0]
-        // const nativeConnection = mongoose.connection
+    })
+    .then(() => console.log('Connected to MongoDB!'))
+    .catch(error => console.log(`Error connecting to Mongodb: ${error.message}`));
+}
 
-        // // Show collections
-        // console.log('Showing current collections...')
-        // nativeConnection.db.listCollections().toArray((error, names) => {
-        //     if (error) {
-        //         throw new Error(error);
-        //     } else {
-        //         names.forEach((elem, idx, aarr) => {
-        //             console.log(`Collection: ${elem.name}`);
-        //         });
-        //     }
-        // });
+// Cassandra setup
+async function connectCassandraDB() {
+    console.log(`Trying to connect to CassandraDB ...`);
 
-        // // Show documents from collection 'Employees'
-        // console.log('Showing documents form collection Employees')
-        // //Employees = nativeConnection.db.collection('Employees')
-        // Employees.find({}, (err, results) => {
-        //     if (err) throw err;
-        //     results.forEach((elem, idx, arr) => {
-        //         console.log(`Elem: ${idx}`)
-        //         console.log(`Elem first_name: ${elem.first_name}`)
-        //         console.log(`Elem last_name: ${elem.last_name}`)
-        //         console.log(`Elem address: ${elem.address}`)
-        //         console.log(`Elem job_title: ${elem.job_title}`)
-        //         console.log(`Elem age: ${elem.age}`)
-        //     })
-        // })
+    const username = process.env.CASSANDRADB_USERNAME || DEFAULT_CASSANDRADB_USERNAME
+    const password = process.env.CASSANDRADB_PASSWORD || DEFAULT_CASSANDRADB_PASSWORD
+    const cassandradbKeyspace = process.env.CASSANDRADB_KEYSPACE || DEFAULT_CASSANDRADB_KEYSPACE
+    const cassandraHost = process.env.CASSANDRADB_HOST || DEFAULT_CASSANDRADB_HOST
+    const cassandraPort = process.env.CASSANDRADB_PORT || DEFAULT_CASSANDRADB_PORT
+    const uri = `${cassandraHost}:${cassandraPort}`; 
 
-    }).catch(error => console.log(`Error connecting to Mongodb: ${error.message}`));
+    var authProvider = new cassandra.auth.PlainTextAuthProvider(username, password);
+    var contactPoints = [uri]; // Note: There can be more, useful for clusters
+    var client = new cassandra.Client({contactPoints: contactPoints, authProvider: authProvider, keyspace: cassandradbKeyspace});
+    client.connect()
+    .then(() => console.log('Connected to CassandraDB!'))
+    .catch(error => console.log(`Error connecting to CassandraDB: ${error.message}`));
 
+
+    //console.log('Connected to CassandraDB!');
+    console.log('TODO: CassandraDB is incomlete!');
+
+    console.log(`- username: ${username}`);
+    console.log(`- password: ${password}`);
+    console.log(`- cassandradbKeyspace: ${cassandradbKeyspace}`);
+    console.log(`- cassandraHost: ${cassandraHost}`);
+    console.log(`- cassandraPort: ${cassandraPort}`);
+    console.log(`- uri: ${uri}`);
+
+    // //   Prepare test query
+    // const query = 'SELECT name, email FROM users WHERE key = ?';
+    // client.execute(query, [ 'someone' ])
+    //     .then(result => console.log('User with email %s', result.rows[0].email)); 
+
+    // // Another test query
+    // const query = "SELECT name, email, birthdate FROM users WHERE key = 'mick-jagger'";
+    // client.execute(query, function (err, result) {
+    //     var user = result.first();
+    //     //The row is an Object with column names as property keys. 
+    //     console.log('My name is %s and my email is %s', user.name, user.email);
+    // });
 }
 
 // Format the time.
@@ -302,6 +316,9 @@ app.post("/drivers", (req, res) => {
 app.listen(port, host);
 
 // Run MongoDB
-connectMongodb().catch(console.error);
+connectMongoDB().catch(console.error);
+
+// Run Cassandra
+connectCassandraDB().catch(console.error);
 
 console.log(`Running on http://${host}:${port}`);

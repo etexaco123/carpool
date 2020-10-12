@@ -13,6 +13,7 @@
     <router-link to="/login">Login</router-link> |
     <router-link to="/manageEmployees">Manage Employees</router-link> |
     <router-link to="/chat">Chat</router-link> |
+    <router-link to="/search">Search</router-link> |
     <router-link to="/logout">Logout</router-link>
   </div>
 
@@ -41,6 +42,7 @@ import ManageEmployees from './components/ManageEmployees.vue'
 import Login from './components/Login.vue'
 import Logout from './components/Logout.vue'
 import Chat from './components/Chat.vue'
+import Search from './components/Search.vue'
 import Footer from './components/Footer.vue'
 
 export default {
@@ -53,6 +55,7 @@ export default {
     'app-login': Login,
     'app-logout': Logout,
     'app-chat': Chat,
+    'app-search': Search,
     'app-footer': Footer
   },
   data() {

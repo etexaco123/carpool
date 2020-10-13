@@ -15,8 +15,8 @@ done
 
 docker-compose -f $MY_DIR/docker-compose.yaml run cqlsh -f /schema/wacc.cql
 
-## Populate the table with existing dummy data.
-#if [ "$populate" = true ]
-#then
-#    docker-compose -f $MY_DIR/docker-compose.yaml run cqlsh -f schema/populate.cql
-#fi
+# Populate the table with existing dummy data.
+if [ "$populate" = true ]
+then
+    docker-compose -f $MY_DIR/docker-compose.yaml run cqlsh -f schema/mock-data.cql
+fi

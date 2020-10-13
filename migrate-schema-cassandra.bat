@@ -20,7 +20,7 @@ goto Continue
 :: Access the helper cqlsh container to migrate the cassandra schema
 docker-compose -f docker-compose.yaml run cqlsh -f /schema/wacc.cql
 
-:::: Populate DB's
-::if  populate == true    (
-::  docker-compose -f docker-compose.yaml run cqlsh -f schema/populate.cql
-::)
+:: Populate DB's
+if  %populate% == true (
+  docker-compose -f docker-compose.yaml run cqlsh -f schema/mock-data.cql
+)

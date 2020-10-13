@@ -38,6 +38,8 @@ const DEFAULT_CASSANDRADB_DATACENTER = `datacenter1`;
 const port = process.env.PORT || DEFAULT_PORT;
 const host = process.env.HOST || DEFAULT_HOST;
 
+const cassandradbKeyspace = process.env.CASSANDRADB_KEYSPACE || DEFAULT_CASSANDRADB_KEYSPACE
+
 // Mongodb setup
 async function connectMongoDB() {
     console.log(`Trying to connect to MongoDB ...`);
@@ -63,12 +65,12 @@ async function connectMongoDB() {
 }
 
 // Cassandra setup
+var cassandraClient = null;
 async function connectCassandraDB() {
     console.log(`Trying to connect to CassandraDB ...`);
 
     const username = process.env.CASSANDRADB_USERNAME || DEFAULT_CASSANDRADB_USERNAME
     const password = process.env.CASSANDRADB_PASSWORD || DEFAULT_CASSANDRADB_PASSWORD
-    const cassandradbKeyspace = process.env.CASSANDRADB_KEYSPACE || DEFAULT_CASSANDRADB_KEYSPACE
     const cassandradbDatacenter = process.env.CASSANDRADB_DATACENTER || DEFAULT_CASSANDRADB_DATACENTER
     const cassandraHost = process.env.CASSANDRADB_HOST || DEFAULT_CASSANDRADB_HOST
     const cassandraPort = process.env.CASSANDRADB_PORT || DEFAULT_CASSANDRADB_PORT
@@ -76,16 +78,16 @@ async function connectCassandraDB() {
 
     const authProvider = new cassandra.auth.PlainTextAuthProvider(username, password);
     const contactPoints = [uri]; // Note: There can be more, useful for clusters
-    var client = new cassandra.Client({contactPoints: contactPoints, authProvider: authProvider, keyspace: cassandradbKeyspace, localDataCenter: cassandradbDatacenter});
+    cassandraClient = new cassandra.Client({contactPoints: contactPoints, authProvider: authProvider, keyspace: cassandradbKeyspace, localDataCenter: cassandradbDatacenter});
     
     // The explicit connection is not required, but docs suggest it nonetheless
-    client.connect()
+    cassandraClient.connect()
         .then(() => console.log('Connected to CassandraDB!'))
         .catch(error => console.log(`Error connecting to CassandraDB: ${error.message}`));
 
     // // Dummy query
     // const query = 'SELECT * from wacc.locations';
-    // client.execute(query)
+    // cassandraClient.execute(query)
     //     .then(result => console.log(result))
     //     .catch(error => console.log(`CassandraDB query ERROR: ${error.message}`));
 }
@@ -154,9 +156,43 @@ app.ws('/chat', (ws, req) => {
         console.log(`Websockets error: ${error}`);
     });
 });
+// app.ws('/location', (ws, req) => {
+//     const wss = wsInstance.getWss();
+//     ws.on('message', (msgObj) => {
+//         console.log('')
+//         const { type, client_id, name, msg } = JSON.parse(msgObj);
+//         if (type == "connect") {
+//             console.log(`New connection from: ${client_id}`)
+//             wss.clients.forEach(function each(client) {
+//                 // Add id if it doesn't exist
+//                 if (!client.id) client.id = client_id
+//             });
+//         } else {
+//             console.log(`Received message from: ${name}`)
+//             console.log(`Message: ${msg}`)
+//             console.log(`Broadcasting...`)
+//             const newMessage = `{"name": "${name}", "msg": "${msg}"}`
+//             wss.clients.forEach(function each(client) {
+//                 if (client.readyState === 1) { // if it's OPEN
+//                     console.log(` - Sending message to client: ${client.id}`)
+//                     client.send(newMessage);
+//                 }
+//             });
+//             console.log(`Message broadcasted successfully to all clients!`)
+//         }
+//     });
+
+//     ws.on('close', () => {
+//         console.log('WebSocket was closed')
+//     });
+
+//     ws.on('error', (error) => {
+//         console.log(`Websockets error: ${error}`);
+//     });
+// });
 
 // This is a test route using for checking the connection between Server and UI.
-app.get("/test", async (req, res) => {
+app.get("/test", (req, res) => {
     console.log("Checking Server Test page");
     var payload = `Testing Server connection! [TIME: ${getDateTime()}]`
     res.send(payload);
@@ -167,7 +203,7 @@ app.get("/", (req, res) => {
     res.render("home");
 });
 
-app.get("/users", async (req, res) => {
+app.get("/users", (req, res) => {
     console.log(`Fetching Users on the Server side [TIME: ${getDateTime()}]`);
     if (mongoose.connection.readyState == 0) {
         return res.status(500).send('No DB connection!');
@@ -183,7 +219,7 @@ app.get("/users", async (req, res) => {
     });
 });
 
-app.get("/employees", async (req, res) => {
+app.get("/employees", (req, res) => {
     console.log(`Fetching Employees on the Server side [TIME: ${getDateTime()}]`);
     if (mongoose.connection.readyState == 0) {
         return res.status(500).send('No DB connection!');
@@ -197,13 +233,12 @@ app.get("/employees", async (req, res) => {
         if (err) return res.status(500).send(err)
         res.status(200).send(employees)
     })
-
 });
 
-app.get("/drivers", async (req, res) => {
+app.get("/drivers", (req, res) => {
     console.log(`Fetching Drivers on the Server side [TIME: ${getDateTime()}]`);
     if (mongoose.connection.readyState == 0) {
-        return res.status(500).send('No DB connection!');
+        return res.status(500).send('No MongoDB connection!');
     } else if(mongoose.connection.readyState == 2 || 
               mongoose.connection.readyState == 3) {
         return res.status(503).send('MongoDB connection is yet initialized. Try again in a few moments. ');
@@ -214,7 +249,23 @@ app.get("/drivers", async (req, res) => {
         if (err) return res.status(500).send(err)
         res.status(200).send(drivers)
     })
+});
 
+// CassandraDB Locations query
+app.get("/locations", (req, res) => {
+    console.log(`Fetching Locations on the Server side [TIME: ${getDateTime()}]`);
+    if (!cassandraClient) return res.status(500).send('No CassandraDB connection!');
+
+    // Prepare the query
+    const query = `SELECT * from ${cassandradbKeyspace}.locations`;
+    cassandraClient.execute(query)
+        .then(result => {
+            return res.status(200).send(result.rows);
+        })
+        .catch(error => {
+            console.log(`CassandraDB query ERROR: ${error.message}`)
+            return res.status(500).send(error);
+        });
 });
 
 //User Sign Up handling

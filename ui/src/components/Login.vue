@@ -6,7 +6,7 @@
       <label> Employee ID: </label>
       <input type="text" v-model.lazy="employee_id" required />
       <label> Password: </label>
-      <input type="text" v-model.lazy="password" required />
+      <input type="password" v-model.lazy="password" required />
       <div id="checkboxes">
         <label> Stay logged in </label>
         <input type="checkbox" value="true" v-model="stayloggedin" />
@@ -27,13 +27,24 @@
 import axios from 'axios';
 
 export default {
+  props:{
+    isLoggedIn: {
+      type:Boolean
+    },
+    role: {
+      type:String
+    },
+    adminMode: {
+      type:Boolean
+    }
+  },
   data() {
     return {
       employee_id: "",
       password: "",
       serverResponse: "",
       showServerResponse: false,
-      stayloggedin: false
+      stayloggedin: false,
     }
   },
   methods: {
@@ -44,11 +55,15 @@ export default {
 
       axios.post(server_url, {
         employee_id: this.employee_id,
-        password: this.password
+        password: this.password        
       })
         .then(response => {
           this.serverResponse = response.data
-          console.log(this.stayloggedin);
+          this.$emit('dologin', true)  
+          if (this.role === "Admin") {
+              console.log(this.role)
+              this.$emit('admin', true)
+          }              
         })
         .catch(error => {
           if (!error.response) {
@@ -57,8 +72,8 @@ export default {
             this.serverResponse = error.response.data
           }
         })
-        .finally(() => {
-          this.showServerResponse = true
+        .finally(() => {          
+          this.showServerResponse = true;     
         })
     }
   }
@@ -80,6 +95,11 @@ label {
   font-weight: bold;
 }
 input[type="text"], textarea {
+  display: block;
+  width: 100%;
+  padding: 8px;
+}
+input[type="password"], textarea {
   display: block;
   width: 100%;
   padding: 8px;

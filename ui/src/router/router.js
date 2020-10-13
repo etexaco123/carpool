@@ -11,8 +11,7 @@ const router = createRouter({
     { path: '/login', name: 'Login', component: () => import('../components/Login.vue') },
     { path: '/manageEmployees', name: 'Manage Employees', component: () => import('../components/ManageEmployees.vue') },
     { path: '/chat', name: 'Chat', component: () => import('../components/Chat.vue') },
-    { path: '/search', name: 'Search', component: () => import('../components/Search.vue') },
-    { path: '/logout', name: 'Logout', component: () => import('../components/Logout.vue') }
+    { path: '/search', name: 'Search', component: () => import('../components/Search.vue') }
   ]
 })
 

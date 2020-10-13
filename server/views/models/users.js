@@ -4,7 +4,8 @@ var mongoose = require("mongoose");
 //Our schema definition
 var UsersSchema = new mongoose.Schema({
     employee_id: String,
-    password: String
+    password: String,
+    role: String
 }, {collection: "Users"});
 
 

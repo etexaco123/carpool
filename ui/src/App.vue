@@ -11,13 +11,18 @@
     <router-link to="/test">Test</router-link> |
     <router-link to="/register">Register</router-link> |
     <router-link to="/login">Login</router-link> |
-    <router-link to="/manageEmployees">Manage Employees</router-link> |
-    <router-link to="/chat">Chat</router-link> |
-    <router-link to="/search">Search</router-link> |
-    <router-link to="/logout">Logout</router-link>
+    <router-link @admin="adminMode=true" to="/manageEmployees">Manage Employees</router-link> |
+    <router-link v-if="isLoggedIn" to="/chat">Chat</router-link> |
+    <router-link v-if="isLoggedIn" to="/search">Search</router-link> |
+    <router-link v-if="isLoggedIn" @click="logout" to="/">Logout</router-link>
   </div>
 
-  <router-view v-slot="{ Component }">
+  <!-- <text-document
+  v-bind:title="doc.title"
+  v-on:update:title="doc.title = $event"
+></text-document> -->
+
+  <router-view v-slot="{ Component }" v-bind:isLoggedIn="isLoggedIn" @dologin="isLoggedIn=true" @dologout="isLoggedIn=false">
     <component :is="Component" />
   </router-view>
 
@@ -68,7 +73,9 @@ export default {
       toggle: true,
       toggle2: false,
       response: "",
-      isResponseShowable: false
+      isResponseShowable: false,
+      isLoggedIn: false,
+      adminMode: false
     }
   },
   methods: {
@@ -87,6 +94,9 @@ export default {
         this.subtitle = this.subtitle_wacc
 
       this.toggle2 = !this.toggle2
+    },
+     logout: function () {
+      this.isLoggedIn = false  
     }
   }
 }

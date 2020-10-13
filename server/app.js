@@ -280,7 +280,8 @@ app.post("/register", (req, res) => {
 
     const user = new Users({
         employee_id: req.body.employee_id,
-        password: req.body.password
+        password: req.body.password,
+        role: req.body.role
     });
     user.save((err) => {
         console.log(`Inserting data into Mongodb ...`);
@@ -345,9 +346,45 @@ app.post("/drivers", (req, res) => {
 });
 
 
+//User Log in handling
+app.post("/login", async (req, res) => {
+    try{
+    const isAuthenticated = false;   
+    const {employee_id, password} = req.body
+    const user = await Users.findOne({       
+            employee_id: employee_id         
+    })
+ 
+    if (!user){
+        return res.status(403).send({
+            error: 'Incorrect login information'
+        })
+    }
+
+    const isPasswordValid = password === user.password
+    if (!isPasswordValid) {
+        return res.status(403).send({
+            error: 'Incorrect login information'
+        })
+    }
+
+    var message = `User ${user.employee_id} logged in successfully!`
+    res.status(201).send(message)
+    
+   
+    } catch (err) {
+        res.status(500).send({
+            error: 'An error has occured trying to log in'
+        })
+    }  
+    
+
+    
+});
+
 
 //====================
-// Run the applicatin
+// Run the application
 //====================
 
 app.listen(port, host);

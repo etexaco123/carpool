@@ -6,7 +6,11 @@
       <label> Employee ID: </label>
       <input type="text" v-model.lazy="employee_id" required />
       <label> Password: </label>
-      <input type="text" v-model.lazy="password" required />
+      <input type="password" v-model.lazy="password" required />
+      <label> Role: </label>
+      <select v-model="this.role" id="dropDownSelection">
+          <option v-for="role in roles" :key="role">{{ role }}</option>
+      </select>
       <button @click.prevent="postRegistration"> Register </button>
     </form>
   </div>
@@ -27,8 +31,10 @@ export default {
     return {
       employee_id: "",
       password: "",
+      role: "",
       serverResponse: "",
-      showServerResponse: false
+      showServerResponse: false,
+      roles: ['Employee','Driver','Admin']   
     }
   },
   methods: {
@@ -39,7 +45,8 @@ export default {
 
       axios.post(server_url, {
         employee_id: this.employee_id,
-        password: this.password
+        password: this.password,
+        role: this.role
       })
         .then(response => {
           this.serverResponse = response.data
@@ -57,6 +64,7 @@ export default {
 
       this.employee_id = ""
       this.password = ""
+      this.role = ""
     }
   }
 }
@@ -70,12 +78,21 @@ export default {
   margin: 20px auto;
   max-width: 500px;
 }
+#dropDownSelection {
+  margin-top: 0px;
+  margin-bottom: 20px;
+}
 label {
   display: block;
   margin: 20px 0 10px;
   font-weight: bold;
 }
 input[type="text"], textarea {
+  display: block;
+  width: 100%;
+  padding: 8px;
+}
+input[type="password"], textarea {
   display: block;
   width: 100%;
   padding: 8px;

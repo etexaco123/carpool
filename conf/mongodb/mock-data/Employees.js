@@ -50,5 +50,15 @@ db.Employees.insertMany([
 		email:"john.smith5@gmail.com",
 		age:25,
 		driver_license:false
+	},
+	{
+		employee_id: "admin",
+		first_name:"admin",
+		last_name:"admin",
+		address:"Groningen",
+		job_title:"IT Administrator",
+		email:"admin.admin@gmail.com",
+		age:25,
+		driver_license:false
 	}
 ]);

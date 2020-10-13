@@ -33,6 +33,7 @@ const DEFAULT_CASSANDRADB_PORT = `9042`;
 const DEFAULT_CASSANDRADB_USERNAME = `root`;
 const DEFAULT_CASSANDRADB_PASSWORD = `rootpass`;
 const DEFAULT_CASSANDRADB_KEYSPACE = `wacc`;
+const DEFAULT_CASSANDRADB_DATACENTER = `datacenter1`;
 
 const port = process.env.PORT || DEFAULT_PORT;
 const host = process.env.HOST || DEFAULT_HOST;
@@ -68,40 +69,25 @@ async function connectCassandraDB() {
     const username = process.env.CASSANDRADB_USERNAME || DEFAULT_CASSANDRADB_USERNAME
     const password = process.env.CASSANDRADB_PASSWORD || DEFAULT_CASSANDRADB_PASSWORD
     const cassandradbKeyspace = process.env.CASSANDRADB_KEYSPACE || DEFAULT_CASSANDRADB_KEYSPACE
+    const cassandradbDatacenter = process.env.CASSANDRADB_DATACENTER || DEFAULT_CASSANDRADB_DATACENTER
     const cassandraHost = process.env.CASSANDRADB_HOST || DEFAULT_CASSANDRADB_HOST
     const cassandraPort = process.env.CASSANDRADB_PORT || DEFAULT_CASSANDRADB_PORT
     const uri = `${cassandraHost}:${cassandraPort}`; 
 
-    var authProvider = new cassandra.auth.PlainTextAuthProvider(username, password);
-    var contactPoints = [uri]; // Note: There can be more, useful for clusters
-    var client = new cassandra.Client({contactPoints: contactPoints, authProvider: authProvider, keyspace: cassandradbKeyspace});
+    const authProvider = new cassandra.auth.PlainTextAuthProvider(username, password);
+    const contactPoints = [uri]; // Note: There can be more, useful for clusters
+    var client = new cassandra.Client({contactPoints: contactPoints, authProvider: authProvider, keyspace: cassandradbKeyspace, localDataCenter: cassandradbDatacenter});
+    
+    // The explicit connection is not required, but docs suggest it nonetheless
     client.connect()
-    .then(() => console.log('Connected to CassandraDB!'))
-    .catch(error => console.log(`Error connecting to CassandraDB: ${error.message}`));
+        .then(() => console.log('Connected to CassandraDB!'))
+        .catch(error => console.log(`Error connecting to CassandraDB: ${error.message}`));
 
-
-    //console.log('Connected to CassandraDB!');
-    console.log('TODO: CassandraDB is incomlete!');
-
-    console.log(`- username: ${username}`);
-    console.log(`- password: ${password}`);
-    console.log(`- cassandradbKeyspace: ${cassandradbKeyspace}`);
-    console.log(`- cassandraHost: ${cassandraHost}`);
-    console.log(`- cassandraPort: ${cassandraPort}`);
-    console.log(`- uri: ${uri}`);
-
-    // //   Prepare test query
-    // const query = 'SELECT name, email FROM users WHERE key = ?';
-    // client.execute(query, [ 'someone' ])
-    //     .then(result => console.log('User with email %s', result.rows[0].email)); 
-
-    // // Another test query
-    // const query = "SELECT name, email, birthdate FROM users WHERE key = 'mick-jagger'";
-    // client.execute(query, function (err, result) {
-    //     var user = result.first();
-    //     //The row is an Object with column names as property keys. 
-    //     console.log('My name is %s and my email is %s', user.name, user.email);
-    // });
+    // // Dummy query
+    // const query = 'SELECT * from wacc.locations';
+    // client.execute(query)
+    //     .then(result => console.log(result))
+    //     .catch(error => console.log(`CassandraDB query ERROR: ${error.message}`));
 }
 
 // Format the time.

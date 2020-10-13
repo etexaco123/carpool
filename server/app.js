@@ -345,6 +345,10 @@ app.post("/drivers", (req, res) => {
     res.status(201).send(message)
 });
 
+// Capture unimplemented routes
+app.get('*', function(req, res){
+    res.status(404).send('Page does not exist!');
+});
 
 //User Log in handling
 app.post("/login", async (req, res) => {

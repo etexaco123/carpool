@@ -7,7 +7,9 @@ const EmployeesSchema = new mongoose.Schema({
     last_name: String,
     address: String,
     job_title: String,
-    age: Number
+    email: String,
+    age: Number,
+    driver_license: Boolean
 }, {collection: "Employees"});
 
 module.exports = mongoose.model("Employees", EmployeesSchema);

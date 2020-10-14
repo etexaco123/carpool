@@ -345,45 +345,37 @@ app.post("/drivers", (req, res) => {
     res.status(201).send(message)
 });
 
+//User Log in handling
+app.post("/login", async (req, res) => {
+    console.log(`Logging in a user on Server side [TIME: ${getDateTime()}]`);
+    if (mongoose.connection.readyState == 0) {
+        return res.status(500).send('No MongoDB connection!');
+    } else if(mongoose.connection.readyState == 2 ||
+              mongoose.connection.readyState == 3) {
+        return res.status(503).send('MongoDB connection is yet initialized. Try again in a few moments. ');
+    }
+
+    try{
+        const {employee_id, password} = req.body
+        const user = await Users.findOne({
+            employee_id: employee_id,
+            password: password
+        })
+        if (!user){
+            return res.status(403).send({
+                error: 'Incorrect login information'
+            })
+        }
+        return res.status(201).send(`User ${user.employee_id} logged in successfully!`)
+    } catch (err) {
+        return res.status(500).send('An error has occured trying to log in')
+    }
+});
+
+
 // Capture unimplemented routes
 app.get('*', function(req, res){
     res.status(404).send('Page does not exist!');
-});
-
-//User Log in handling
-app.post("/login", async (req, res) => {
-    try{
-    const isAuthenticated = false;   
-    const {employee_id, password} = req.body
-    const user = await Users.findOne({       
-            employee_id: employee_id         
-    })
- 
-    if (!user){
-        return res.status(403).send({
-            error: 'Incorrect login information'
-        })
-    }
-
-    const isPasswordValid = password === user.password
-    if (!isPasswordValid) {
-        return res.status(403).send({
-            error: 'Incorrect login information'
-        })
-    }
-
-    var message = `User ${user.employee_id} logged in successfully!`
-    res.status(201).send(message)
-    
-   
-    } catch (err) {
-        res.status(500).send({
-            error: 'An error has occured trying to log in'
-        })
-    }  
-    
-
-    
 });
 
 

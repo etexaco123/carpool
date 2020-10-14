@@ -203,6 +203,7 @@ app.get("/", (req, res) => {
     res.render("home");
 });
 
+// Routes to retrieve users data from the MongoDB
 app.get("/users", (req, res) => {
     console.log(`Fetching Users on the Server side [TIME: ${getDateTime()}]`);
     if (mongoose.connection.readyState == 0) {
@@ -218,7 +219,6 @@ app.get("/users", (req, res) => {
         res.status(200).send(users)
     });
 });
-
 app.get("/employees", (req, res) => {
     console.log(`Fetching Employees on the Server side [TIME: ${getDateTime()}]`);
     if (mongoose.connection.readyState == 0) {
@@ -234,7 +234,6 @@ app.get("/employees", (req, res) => {
         res.status(200).send(employees)
     })
 });
-
 app.get("/drivers", (req, res) => {
     console.log(`Fetching Drivers on the Server side [TIME: ${getDateTime()}]`);
     if (mongoose.connection.readyState == 0) {
@@ -268,9 +267,9 @@ app.get("/locations", (req, res) => {
         });
 });
 
-//User Sign Up handling
-app.post("/register", (req, res) => {
-    console.log("Server: Registering...");
+// Register users data
+app.post("/users", (req, res) => {
+    console.log("Server: Registering user...");
     if (mongoose.connection.readyState == 0) {
         return res.status(500).send('No DB connection!');
     } else if(mongoose.connection.readyState == 2 || 
@@ -284,16 +283,15 @@ app.post("/register", (req, res) => {
         role: req.body.role
     });
     user.save((err) => {
-        console.log(`Inserting data into Mongodb ...`);
         if (err) return res.status(500).send(err);
-        console.log(`... User added successfully`);
     });
 
-    var message = `User ${user.employee_id} created successfully!`
-    res.status(201).send(message)
+    var message = `User ${user.employee_id} created successfully! (Role: ${user.role})`
+    console.log(message);
+    return res.status(201).send(message)
 });
 app.post("/employees", (req, res) => {
-    console.log("Server: Registering...");
+    console.log("Server: Registering employee...");
     if (mongoose.connection.readyState == 0) {
         return res.status(500).send('No DB connection!');
     } else if(mongoose.connection.readyState == 2 || 
@@ -311,16 +309,15 @@ app.post("/employees", (req, res) => {
         driver_license: req.body.driver_license
     });
     employee.save((err) => {
-        console.log(`Inserting data into Mongodb ...`);
         if (err) return res.status(500).send(err);
         console.log(`... Employee added successfully`);
     });
 
     var message = `Employee ${employee.employee_id} added successfully!`
-    res.status(201).send(message)
+    return res.status(201).send(message)
 });
 app.post("/drivers", (req, res) => {
-    console.log("Server: Registering...");
+    console.log("Server: Registering driver...");
     if (mongoose.connection.readyState == 0) {
         return res.status(500).send('No DB connection!');
     } else if(mongoose.connection.readyState == 2 || 
@@ -336,16 +333,15 @@ app.post("/drivers", (req, res) => {
         car_image_id: req.body.car_image_id
     });
     driver.save((err) => {
-        console.log(`Inserting data into Mongodb ...`);
         if (err) return res.status(500).send(err);
         console.log(`... Driver added successfully`);
     });
 
     var message = `Driver ${driver.employee_id} added successfully!`
-    res.status(201).send(message)
+    return res.status(201).send(message)
 });
 
-//User Log in handling
+// User Log in handling
 app.post("/login", async (req, res) => {
     console.log(`Logging in a user on Server side [TIME: ${getDateTime()}]`);
     if (mongoose.connection.readyState == 0) {
@@ -366,14 +362,15 @@ app.post("/login", async (req, res) => {
                 error: 'Incorrect login information'
             })
         }
-        return res.status(201).send(`User ${user.employee_id} logged in successfully!`)
+        const message = `User ${user.employee_id} logged in successfully! (Role: ${user.role})`
+        console.log(message)
+        return res.status(201).send(message)
     } catch (err) {
         return res.status(500).send('An error has occured trying to log in')
     }
 });
 
-
-// Capture unimplemented routes
+// Capture unimplemented routes.
 app.get('*', function(req, res){
     res.status(404).send('Page does not exist!');
 });

@@ -1,11 +1,33 @@
 <template>
 <div>
 
-  <div id="dropDownSelection">
-    <dropdown v-bind:options="arrayOfObjects" :selected="object" v-on:updateoption="methodToRunOnSelect"></dropdown>
+  <div id="dropDownTypeSelection">
+    <dropdown v-bind:options="registrationTypes" :selected="registrationType" @updateoption="selectRegistrationType"></dropdown>
   </div>
 
-  <div id="addEmployeeInfo" v-if="object.name=='Employee'">
+  <div id="addDriverInfo" v-if="registrationType.name=='Driver'">
+    <form>
+      <span><label> Employee ID </label></span>
+      <input type="text" v-model.lazy="driver.employee_id" required />
+      <br>
+      <span><label> First Name </label></span>
+      <input type="text" v-model.lazy="driver.first_name" required />
+      <br>
+      <span><label> Last Name </label></span>
+      <input type="text" v-model.lazy="driver.last_name" required />
+      <br>
+      <span><label> Car Make </label></span>
+      <input type="text" v-model.lazy="driver.car_make" required />
+      <br>
+      <span><label> Car Image ID </label></span>
+      <input type="text" v-model.lazy="driver.car_image_id" required />
+      <br>
+
+      <button @click.prevent="postDriver"> Add {{ registrationType.name }} </button>
+    </form>
+  </div>
+  
+  <div id="addEmployeeInfo" v-if="registrationType.name=='Employee'">
     <form>
       <label> Employee ID </label>
       <input type="text" v-model.lazy="employee.employee_id" required />
@@ -32,29 +54,23 @@
       <input type="text" v-model.lazy="employee.driver_license" required />
       <br>
 
-      <button @click.prevent="postEmployee"> Add {{ object.name }} </button>
+      <button @click.prevent="postUser"> Add {{ registrationType.name }} </button>
     </form>
   </div>
-
-  <div id="addDriverInfo" v-if="object.name=='Driver'">
+  
+  <div id="addEmployeeInfo" v-if="registrationType.name=='User'">
     <form>
-      <span><label> Employee ID </label></span>
-      <input type="text" v-model.lazy="driver.employee_id" required />
+      <label> Employee ID </label>
+      <input type="text" v-model.lazy="user.employee_id" required />
       <br>
-      <span><label> First Name </label></span>
-      <input type="text" v-model.lazy="driver.first_name" required />
+      <label> Password </label>
+      <input type="password" v-model.lazy="user.password" required />
       <br>
-      <span><label> Last Name </label></span>
-      <input type="text" v-model.lazy="driver.last_name" required />
-      <br>
-      <span><label> Car Make </label></span>
-      <input type="text" v-model.lazy="driver.car_make" required />
-      <br>
-      <span><label> Car Image ID </label></span>
-      <input type="text" v-model.lazy="driver.car_image_id" required />
+      <label id="roleLabel"> Role </label>
+      <dropdown id="dropDownRoleSelection" v-bind:options="roles" :selected="role" @updateoption="selectRole"></dropdown>
       <br>
 
-      <button @click.prevent="postDriver"> Add {{ object.name }} </button>
+      <button @click.prevent="postUser"> Add {{ registrationType.name }} </button>
     </form>
   </div>
 
@@ -74,6 +90,13 @@ export default {
   data() {
     return {
       // Data structures
+      driver: {
+        employee_id: "",
+        first_name: "",
+        last_name: "",
+        car_make: "",
+        car_image_id: ""
+      },
       employee: {
         employee_id: "",
         first_name: "",
@@ -84,24 +107,30 @@ export default {
         age: "",
         driver_license: ""
       },
-      driver: {
+      user: {
         employee_id: "",
-        first_name: "",
-        last_name: "",
-        car_make: "",
-        car_image_id: ""
+        password: "",
+        role: ""
       },
 
       serverResponse: "",
       showServerResponse: false,
 
       // Props for the Dropdown component
-      arrayOfObjects: [
+      registrationTypes: [
+        {name: "Driver"},
         {name: "Employee"},
-        {name: "Driver"}
+        {name: "User"}
       ],
-      object: {
-        name: "Select Type"
+      registrationType: {
+        name: "Select Registration Type"
+      },
+      roles: [
+        {name: "Normal"},
+        {name: "Admin"}
+      ],
+      role: {
+        name: "Select Role"
       }
     }
   },
@@ -109,11 +138,14 @@ export default {
     "dropdown": dropdown
   },
   methods: {
+    postDriver: function() {
+      this.postData("drivers", this.driver)
+    },
     postEmployee: function() {
       this.postData("employees", this.employee)
     },
-    postDriver: function() {
-      this.postData("drivers", this.driver)
+    postUser: function() {
+      this.postData("users", this.user)
     },
     postData: function(type, data) {
       const server_host = process.env.VUE_APP_SERVER_HOST || '127.0.0.1';
@@ -135,17 +167,26 @@ export default {
           this.showServerResponse = true
         })
     },
-    methodToRunOnSelect(payload) {
-      this.object = payload;
+    selectRegistrationType(payload) {
+      this.registrationType = payload;
+    },
+    selectRole(payload) {
+      this.role = payload;
+      this.user.role = payload.name;
     }
   }
 }
 </script>
 
 <style scoped>
-#dropDownSelection {
+#dropDownTypeSelection {
   margin-top: 0px;
   margin-bottom: 20px;
+}
+#dropDownRoleSelection {
+  margin-top: 0px;
+  margin-bottom: 20px;
+  margin-right:10px;
 }
 #addEmployeeInfo * {
   box-sizing: border-box;
@@ -170,7 +211,15 @@ label {
   max-width: 150px;
   width: 150px;
 }
+#roleLabel {
+  margin-right: 40px;
+}
 input[type="text"], textarea {
+  display: inline-block;
+  width: 50%;
+  padding: 8px;
+}
+input[type="password"], textarea {
   display: inline-block;
   width: 50%;
   padding: 8px;

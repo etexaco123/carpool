@@ -4,27 +4,27 @@ db.Users.insertMany([
 	{
 		employee_id:"1",
 		password:"password1",
-		role:"Employee"
+		role:"Normal"
 	},
 	{
 		employee_id:"2",
 		password:"password2",
-		role:"Employee"
+		role:"Normal"
 	},
 	{
 		employee_id:"3",
 		password:"password3",
-		role:"Driver"
+		role:"Normal"
 	},
 	{
 		employee_id:"4",
 		password:"password4",
-		role:"Driver"
+		role:"Normal"
 	},
 	{
 		employee_id:"5",
 		password:"password5",
-		role:"Employee"
+		role:"Normal"
 	},
 	{
 		employee_id:"admin",

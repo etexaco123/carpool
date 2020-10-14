@@ -7,20 +7,14 @@
   </div>
 
   <div id="nav">
-    <router-link to="/">Home</router-link> |
-    <router-link to="/test">Test</router-link> |
-    <router-link to="/register">Register</router-link> |
-    <router-link to="/login">Login</router-link> |
-    <router-link @admin="adminMode=true" to="/manageEmployees">Manage Employees</router-link> |
-    <router-link v-if="isLoggedIn" to="/chat">Chat</router-link> |
-    <router-link v-if="isLoggedIn" to="/search">Search</router-link> |
-    <router-link v-if="isLoggedIn" @click="logout" to="/">Logout</router-link>
+    <span> <router-link to="/">Home</router-link> | </span>
+    <span> <router-link to="/test">Test Server</router-link> | </span>
+    <span v-if="!isLoggedIn"> <router-link to="/login">Login</router-link> | </span>
+    <span v-if="isLoggedIn"> <router-link @admin="adminMode=true" to="/manageEmployees">Manage Employees</router-link> | </span>
+    <span v-if="isLoggedIn"> <router-link to="/chat">Chat</router-link> | </span>
+    <span v-if="isLoggedIn"> <router-link to="/search">Search</router-link> | </span>
+    <span v-if="isLoggedIn"> <router-link @click="logout" to="/">Logout</router-link> </span>
   </div>
-
-  <!-- <text-document
-  v-bind:title="doc.title"
-  v-on:update:title="doc.title = $event"
-></text-document> -->
 
   <router-view v-slot="{ Component }" v-bind:isLoggedIn="isLoggedIn" @dologin="isLoggedIn=true" @dologout="isLoggedIn=false">
     <component :is="Component" />
@@ -42,7 +36,6 @@
 import Header from './components/Header.vue'
 import Home from './components/Home.vue'
 import Test from './components/Test.vue'
-import Register from './components/Register.vue'
 import ManageEmployees from './components/ManageEmployees.vue'
 import Login from './components/Login.vue'
 import Logout from './components/Logout.vue'
@@ -55,7 +48,6 @@ export default {
     'app-header': Header,
     'app-home': Home,
     'app-test': Test,
-    'app-register': Register,
     'app-manage-employees': ManageEmployees,
     'app-login': Login,
     'app-logout': Logout,

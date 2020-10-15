@@ -140,12 +140,34 @@ export default {
   methods: {
     postDriver: function() {
       this.postData("drivers", this.driver)
+      this.driver = {
+        employee_id: "",
+        first_name: "",
+        last_name: "",
+        car_make: "",
+        car_image_id: ""
+      }
     },
     postEmployee: function() {
       this.postData("employees", this.employee)
+      this.employee = {
+        employee_id: "",
+        first_name: "",
+        last_name: "",
+        address: "",
+        job_title: "",
+        email: "",
+        age: "",
+        is_driver: ""
+      }
     },
     postUser: function() {
       this.postData("users", this.user)
+      this.user = {
+        employee_id: "",
+        password: "",
+        role: ""
+      }
     },
     postData: function(type, data) {
       const server_host = process.env.VUE_APP_SERVER_HOST || '127.0.0.1';

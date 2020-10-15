@@ -10,13 +10,13 @@
     <span> <router-link to="/">Home</router-link> | </span>
     <span> <router-link to="/test">Test Server</router-link> | </span>
     <span v-if="!isLoggedIn"> <router-link to="/login">Login</router-link> | </span>
-    <span v-if="isLoggedIn"> <router-link @admin="adminMode=true" to="/manageEmployees">Manage Employees</router-link> | </span>
+    <span v-if="isLoggedIn && isAdmin"> <router-link to="/manageEmployees">Manage Employees</router-link> | </span>
     <span v-if="isLoggedIn"> <router-link to="/chat">Chat</router-link> | </span>
     <span v-if="isLoggedIn"> <router-link to="/search">Search</router-link> | </span>
-    <span v-if="isLoggedIn"> <router-link @click="logout" to="/">Logout</router-link> </span>
+    <span v-if="isLoggedIn"> <router-link @click="logout" to="/logout">Logout</router-link> </span>
   </div>
 
-  <router-view v-slot="{ Component }" v-bind:isLoggedIn="isLoggedIn" @dologin="isLoggedIn=true" @dologout="isLoggedIn=false">
+  <router-view v-slot="{ Component }" v-bind:isLoggedIn="isLoggedIn" @dologin="isLoggedIn=true" @dologout="isLoggedIn=false" @admin="isAdmin=true">
     <component :is="Component" />
   </router-view>
 
@@ -67,7 +67,7 @@ export default {
       response: "",
       isResponseShowable: false,
       isLoggedIn: false,
-      adminMode: false
+      isAdmin: false
     }
   },
   methods: {
@@ -88,7 +88,8 @@ export default {
       this.toggle2 = !this.toggle2
     },
      logout: function () {
-      this.isLoggedIn = false  
+      this.isLoggedIn = false
+      this.isAdmin = false
     }
   }
 }

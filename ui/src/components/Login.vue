@@ -1,7 +1,7 @@
 <template>
 <div>
 
-  <div id="login">
+  <div id="login" v-if="!isLoggedIn">
     <form>
       <label> Employee ID: </label>
       <input type="text" v-model.lazy="employee_id" required />
@@ -17,7 +17,7 @@
 
   <div id="resultArea" v-if="this.showServerResponse">
     <label id="resultLabel"> Result: </label>
-    <p id="serverResponse"> {{ serverResponse }} </p>
+    <p id="serverResponse"> {{ serverResponse.message }} </p>
   </div>
 
 </div>
@@ -44,7 +44,7 @@ export default {
       password: "",
       serverResponse: "",
       showServerResponse: false,
-      stayloggedin: false,
+      stayloggedin: false
     }
   },
   methods: {
@@ -59,11 +59,12 @@ export default {
       })
         .then(response => {
           this.serverResponse = response.data
-          this.$emit('dologin', true)  
-          if (this.role === "Admin") {
-              console.log(this.role)
-              this.$emit('admin', true)
-          }              
+          if (!this.serverResponse.error) {
+            this.$emit('dologin', true)  
+            if (this.serverResponse.data.role === "Admin") {
+                this.$emit('admin', true)
+            }
+          }
         })
         .catch(error => {
           if (!error.response) {

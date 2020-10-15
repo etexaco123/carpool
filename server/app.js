@@ -306,7 +306,7 @@ app.post("/employees", (req, res) => {
         address: req.body.address,
         job_title: req.body.job_title,
         age: req.body.age,
-        driver_license: req.body.driver_license
+        is_driver: req.body.is_driver
     });
     employee.save((err) => {
         if (err) return res.status(500).send(err);
@@ -329,7 +329,7 @@ app.post("/drivers", (req, res) => {
         employee_id: req.body.employee_id,
         first_name: req.body.first_name,
         last_name: req.body.last_name,
-        car_model: req.body.car_model,
+        car_make: req.body.car_make,
         car_image_id: req.body.car_image_id
     });
     driver.save((err) => {
@@ -344,11 +344,22 @@ app.post("/drivers", (req, res) => {
 // User Log in handling
 app.post("/login", async (req, res) => {
     console.log(`Logging in a user on Server side [TIME: ${getDateTime()}]`);
+    
+    var payload = {
+        error: false,
+        message: "",
+        data: {}
+    }
+    
     if (mongoose.connection.readyState == 0) {
-        return res.status(500).send('No MongoDB connection!');
+        payload.message = "No MongoDB connection!"
+        payload.error = true
+        return res.status(500).send(payload);
     } else if(mongoose.connection.readyState == 2 ||
               mongoose.connection.readyState == 3) {
-        return res.status(503).send('MongoDB connection is yet initialized. Try again in a few moments. ');
+        payload.message = "MongoDB connection is yet initialized. Try again in a few moments."
+        payload.error = true
+        return res.status(503).send(payload);
     }
 
     try{
@@ -357,17 +368,58 @@ app.post("/login", async (req, res) => {
             employee_id: employee_id,
             password: password
         })
-        if (!user){
-            return res.status(403).send({
-                error: 'Incorrect login information'
-            })
+        if (!user) {
+            payload.message = "Incorrect login information";
+            payload.error = true
+            return res.status(403).send(payload)
         }
-        const message = `User ${user.employee_id} logged in successfully! (Role: ${user.role})`
-        console.log(message)
-        return res.status(201).send(message)
+        payload.message = `User ${user.employee_id} logged in successfully! (Role: ${user.role})`
+        payload.data.employee_id = user.employee_id
+        payload.data.password = user.password
+        payload.data.role = user.role
+
+        // Fetch the user's data from the Employees and Drivers db's
+        const employee = await Employees.findOne({
+            employee_id: payload.data.employee_id
+        })
+        if (!employee) {
+            // Return current data
+            console.log(`No employee information for user: ${payload.data.employee_id}`)
+            return res.status(201).send(payload)
+        }
+        payload.data.first_name = employee.first_name
+        payload.data.last_name = employee.last_name
+        payload.data.address = employee.address
+        payload.data.job_title = employee.job_title
+        payload.data.email = employee.email
+        payload.data.age = employee.age
+        payload.data.is_driver = employee.is_driver
+
+        // Check if the employee is also a driver
+        if ("is_driver" in payload.data)
+        {
+            const driver = await Drivers.findOne({
+                employee_id: payload.data.employee_id
+            })
+            if (!driver) {
+                // Return current data
+                console.log(`No driver information for user ${payload.data.employee_id}`)
+                return res.status(201).send(payload)
+            }
+            payload.data.car_make = driver.car_make
+            payload.data.car_image_id = driver.car_image_id
+        } else {
+            console.log(`User ${payload.data.employee_id} is not a driver!`)
+        }
     } catch (err) {
-        return res.status(500).send('An error has occured trying to log in')
+        payload.error = true
+        payload.message = "An error has occured trying to log in"
+        return res.status(500).send(payload)
     }
+
+    console.log(payload.message)
+    return res.status(201).send(payload)
+
 });
 
 // Capture unimplemented routes.

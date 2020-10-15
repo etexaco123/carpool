@@ -51,7 +51,7 @@
       <input type="text" v-model.lazy="employee.age" required />
       <br>
       <label> Driver License </label>
-      <input type="text" v-model.lazy="employee.driver_license" required />
+      <input type="text" v-model.lazy="employee.is_driver" required />
       <br>
 
       <button @click.prevent="postUser"> Add {{ registrationType.name }} </button>
@@ -105,7 +105,7 @@ export default {
         job_title: "",
         email: "",
         age: "",
-        driver_license: ""
+        is_driver: ""
       },
       user: {
         employee_id: "",

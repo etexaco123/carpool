@@ -375,7 +375,7 @@ app.post("/login", async (req, res) => {
         }
         payload.message = `User ${user.employee_id} logged in successfully! (Role: ${user.role})`
         payload.data.employee_id = user.employee_id
-        payload.data.password = user.password
+        //payload.data.password = user.password  // Don't send the password as payload!
         payload.data.role = user.role
 
         // Fetch the user's data from the Employees and Drivers db's

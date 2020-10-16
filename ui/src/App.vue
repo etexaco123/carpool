@@ -7,16 +7,16 @@
   </div>
 
   <div id="nav">
-    <span> <router-link to="/">Home</router-link> | </span>
-    <span> <router-link to="/test">Test Server</router-link> | </span>
-    <span v-if="!isLoggedIn"> <router-link to="/login">Login</router-link> | </span>
-    <span v-if="isLoggedIn && isAdmin"> <router-link to="/manageEmployees">Manage Employees</router-link> | </span>
-    <span v-if="isLoggedIn"> <router-link to="/chat">Chat</router-link> | </span>
-    <span v-if="isLoggedIn"> <router-link to="/search">Search</router-link> | </span>
-    <span v-if="isLoggedIn"> <router-link @click="logout" to="/logout">Logout</router-link> </span>
+    <span> <router-link to="/" exact>Home</router-link> | </span>
+    <span> <router-link to="/test" exact>Test Server</router-link> | </span>
+    <span v-if="!isLoggedIn"> <router-link to="/login" exact>Login</router-link> | </span>
+    <span v-if="isLoggedIn && isAdmin"> <router-link to="/manageEmployees" exact>Manage Employees</router-link> | </span>
+    <span v-if="isLoggedIn"> <router-link to="/chat" exact>Chat</router-link> | </span>
+    <span v-if="isLoggedIn"> <router-link to="/search" exact>Search</router-link> | </span>
+    <span v-if="isLoggedIn"> <router-link @click="logout" to="/logout" exact>Logout</router-link> </span>
   </div>
 
-  <router-view v-slot="{ Component }" v-bind:isLoggedIn="isLoggedIn" @dologin="isLoggedIn=true" @dologout="isLoggedIn=false" @admin="isAdmin=true">
+  <router-view v-slot="{ Component }" v-bind:userData="userData" v-bind:isLoggedIn="isLoggedIn" @dologin="login($event)" @dologout="logout">
     <component :is="Component" />
   </router-view>
 
@@ -67,7 +67,8 @@ export default {
       response: "",
       isResponseShowable: false,
       isLoggedIn: false,
-      isAdmin: false
+      isAdmin: false,
+      userData: {}
     }
   },
   methods: {
@@ -87,7 +88,12 @@ export default {
 
       this.toggle2 = !this.toggle2
     },
-     logout: function () {
+    login: function (payload) {
+      this.isLoggedIn = true
+      this.userData = payload.userData
+      this.isAdmin = ( this.userData.role == "Admin" ? true : false );
+    },
+    logout: function () {
       this.isLoggedIn = false
       this.isAdmin = false
     }

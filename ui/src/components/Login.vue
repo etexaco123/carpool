@@ -1,16 +1,16 @@
 <template>
 <div>
 
-  <div id="login" v-if="!isLoggedIn">
+  <div id="login" v-if="!payload.isLoggedIn">
     <form>
       <label> Employee ID: </label>
       <input type="text" v-model.lazy="employee_id" required />
       <label> Password: </label>
       <input type="password" v-model.lazy="password" required />
-      <div id="checkboxes">
+      <!-- <div id="checkboxes">
         <label> Stay logged in </label>
         <input type="checkbox" value="true" v-model="stayloggedin" />
-      </div>
+      </div> -->
       <button @click.prevent="postLogin"> Log in </button>
     </form>
   </div>
@@ -27,24 +27,17 @@
 import axios from 'axios';
 
 export default {
-  props:{
-    isLoggedIn: {
-      type:Boolean
-    },
-    role: {
-      type:String
-    },
-    adminMode: {
-      type:Boolean
-    }
-  },
   data() {
     return {
       employee_id: "",
       password: "",
       serverResponse: "",
       showServerResponse: false,
-      stayloggedin: false
+      stayloggedin: false,
+      payload: {
+        isLoggedIn: false,
+        userData: {}
+      }
     }
   },
   methods: {
@@ -60,10 +53,9 @@ export default {
         .then(response => {
           this.serverResponse = response.data
           if (!this.serverResponse.error) {
-            this.$emit('dologin', true)  
-            if (this.serverResponse.data.role === "Admin") {
-                this.$emit('admin', true)
-            }
+            this.payload.isLoggedIn = true
+            this.payload.userData = this.serverResponse.data
+            this.$emit('dologin', this.payload)
           }
         })
         .catch(error => {
@@ -118,7 +110,7 @@ input[type="password"], textarea {
   margin-right: 10px;
 }
 button {
-  margin-top: 10px;
+  margin-top: 20px;
   margin-bottom: 20px;
   padding: 10px;
 }

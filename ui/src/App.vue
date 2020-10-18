@@ -13,7 +13,7 @@
     <span v-if="isLoggedIn && isAdmin"> <router-link to="/manageEmployees" exact>Manage Employees</router-link> | </span>
     <span v-if="isLoggedIn"> <router-link to="/chat" exact>Chat</router-link> | </span>
     <span v-if="isLoggedIn"> <router-link to="/search" exact>Search</router-link> | </span>
-    <span v-if="isLoggedIn"> <router-link @click="logout" to="/" exact>Logout</router-link> </span>
+    <span v-if="isLoggedIn"> <router-link @click="logout" to="/logout" exact>Logout</router-link> </span>
   </div>
 
   <router-view v-slot="{ Component }" v-bind:userData="userData" v-bind:isLoggedIn="isLoggedIn" @dologin="login($event)" @dologout="logout">

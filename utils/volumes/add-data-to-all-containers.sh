@@ -15,3 +15,6 @@ $MY_DIR/add-data-to-1-container.sh -v mongodb-schema -s $MY_DIR/../../conf/mongo
 
 # Copy the Mongodb mock data files.
 $MY_DIR/add-data-to-1-container.sh -v mongodb-mock-data -s $MY_DIR/../../conf/mongodb/mock-data/.
+
+# Copy the Nginx conf.
+$MY_DIR/add-data-to-1-container.sh -v nginx-conf -s $MY_DIR/../../conf/nginx/.

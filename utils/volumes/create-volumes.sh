@@ -12,3 +12,4 @@ docker volume create cassandra-historical-data
 docker volume create kafka-offset
 docker volume create redis-data
 docker volume create redis-conf
+docker volume create nginx-conf

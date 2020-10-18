@@ -23,6 +23,8 @@ services:
   image: ui
   env_file: ./ui/.env
   command: "nginx -g 'daemon off;'"
+  volumes:
+   - nginx-conf:/etc/nginx/conf.d
   ports:
    - 8080:80
   networks:
@@ -246,6 +248,8 @@ volumes:
  redis-data:
   external: true
  redis-conf:
+  external: true
+ nginx-conf:
   external: true
 
 networks:

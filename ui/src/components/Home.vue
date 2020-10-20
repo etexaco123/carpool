@@ -17,7 +17,7 @@ export default {
   data() {
     return {
       id: "",
-      welcomeMarginBottom: 100
+      welcomeMarginBottom: 150
     }
   },
   methods: {
@@ -41,13 +41,13 @@ export default {
 
 <style scoped>
 h1 {
-  color: #b85;
+  color: #fc8;
   margin-top: 50px;
 }
 h3 {
-  color: #b85;
+  color: #fc8;
   margin-top: 20px;
-  margin-bottom: 100px;
+  margin-bottom: 130px;
 }
 
 </style>

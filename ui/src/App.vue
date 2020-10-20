@@ -127,11 +127,8 @@ body {
   margin-top: 10px;
   margin-bottom: 10px;
 }
-h1 {
-  color: red;
-}
 #subtitle {
-  color: #b85;
+  color: #fc8;
   margin: 20px;
 }
 #nav {

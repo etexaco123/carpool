@@ -11,6 +11,10 @@
     </form>
   </div>
 
+  <div v-if="payload.isLoggedIn">
+    <h3> Redirecting Home ... </h3>
+  </div>
+
   <div id="resultArea" v-if="this.showServerResponse">
     <label id="resultLabel"> Result: </label>
     <p id="serverResponse"> {{ serverResponse.message }} </p>
@@ -137,6 +141,12 @@ button {
 #resultLabel {
   text-align: center;
   font-weight: bold;
+}
+h3{
+  display: block;
+  margin-top: 50px;
+  margin-bottom: 100px;
+  color: #fc8;
 }
 
 </style>

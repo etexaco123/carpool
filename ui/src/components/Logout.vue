@@ -1,6 +1,7 @@
 <template>
 <div>
-    <h2>Logging out...</h2>
+    <h1> Logging out ...</h1>
+    <h3> Redirecting Home ...</h3>
 </div>
 </template>
 
@@ -50,11 +51,17 @@ export default {
   margin: 20px auto;
   max-width: 500px;
 }
-h2 {
+h1 {
+  display: block;
+  margin-top: 50px;
+  margin-bottom: 20px;
+  color: #fc8;
+}
+h3 {
   display: block;
   margin-top: 10px;
   margin-bottom: 100px;
-  color: #b85;
+  color: #fc8;
 }
 
 </style>

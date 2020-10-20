@@ -4,14 +4,10 @@
   <div id="login" v-if="!payload.isLoggedIn">
     <form>
       <label> Employee ID: </label>
-      <input type="text" v-model.lazy="employee_id" required />
+      <input type="text" :disabled=isInputDisabled v-model.lazy="employee_id" required />
       <label> Password: </label>
-      <input type="password" v-model.lazy="password" required />
-      <!-- <div id="checkboxes">
-        <label> Stay logged in </label>
-        <input type="checkbox" value="true" v-model="stayloggedin" />
-      </div> -->
-      <button @click.prevent="postLogin"> Log in </button>
+      <input type="password" :disabled=isInputDisabled v-model.lazy="password" required />
+      <button :disabled=isInputDisabled @click.prevent="postLogin"> Log in </button>
     </form>
   </div>
 
@@ -31,9 +27,13 @@ export default {
     return {
       employee_id: "",
       password: "",
-      serverResponse: "",
+      isInputDisabled: false,
+      serverResponse: {
+        error: false,
+        message: "",
+        data: {}
+      },
       showServerResponse: false,
-      stayloggedin: false,
       payload: {
         isLoggedIn: false,
         userData: {}
@@ -45,6 +45,9 @@ export default {
       const server_host = process.env.VUE_APP_SERVER_HOST || '127.0.0.1';
       const server_port = process.env.VUE_APP_SERVER_PORT || '5050';
       const server_url = `http://${server_host}:${server_port}/login`
+
+      // Temporarily disable the input fields
+      this.isInputDisabled = true;
 
       axios.post(server_url, {
         employee_id: this.employee_id,
@@ -60,13 +63,20 @@ export default {
         })
         .catch(error => {
           if (!error.response) {
-            this.serverResponse = error.message
+              this.serverResponse.message = error.message
           } else {
             this.serverResponse = error.response.data
           }
         })
         .finally(() => {          
-          this.showServerResponse = true;     
+          this.showServerResponse = true;
+
+          // Clear up the fields
+          this.employee_id = ""
+          this.password = ""
+
+          // re-enable the input fields
+          this.isInputDisabled = false;
         })
     }
   }

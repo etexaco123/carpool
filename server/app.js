@@ -1,6 +1,8 @@
 'use strict';
 
+const { TIMEOUT } = require("dns");
 const   express 				    = require("express")
+        , session                   = require("express-session")
         , enableWs                  = require('express-ws')
         , http                      = require("http")
         , url                       = require("url")
@@ -37,6 +39,12 @@ const DEFAULT_CASSANDRADB_DATACENTER = `datacenter1`;
 
 const port = process.env.PORT || DEFAULT_PORT;
 const host = process.env.HOST || DEFAULT_HOST;
+
+//SESSION related constants
+const SESSION_NAME = 'sid';
+const ONE_HOUR = 1000 * 60 * 60;
+const SESSION_LIFETIME = new Date(Date.now() + ONE_HOUR);
+const SESSION_SECRET =  'wacc-grp6';
 
 const cassandradbKeyspace = process.env.CASSANDRADB_KEYSPACE || DEFAULT_CASSANDRADB_KEYSPACE
 
@@ -96,22 +104,36 @@ async function connectCassandraDB() {
 function getDateTime() {
     return new Date().toISOString().replace('T', ' ').substr(0, 19);
 }
+   
 
 
 //run express
 var app = express();
 // Cors
-app.use(cors());
+app.use(cors({
+    origin: [
+        'http://localhost:8080',
+        'https://localhost:8080'
+      ],
+      credentials: true,
+      exposedHeaders: ['set-cookie']
+}));
 //Needed to be able to run contents of public dir like css file
 app.use(express.static("public"));
 //Needed for posting data into a request
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 //required method to use express-session
-app.use(require("express-session")({
-    secret: "group6 is the best",
+app.use(session({
+    name: SESSION_NAME,
+    secret: SESSION_SECRET,
     resave: false,
-    saveUninitialized: false
+    saveUninitialized: false,
+    cookie: {
+        maxAge: SESSION_LIFETIME,
+        sameSite: true,
+        secure: false
+    }
 }));
 
 // Enable websockets
@@ -194,8 +216,10 @@ app.ws('/chat', (ws, req) => {
 // This is a test route using for checking the connection between Server and UI.
 app.get("/test", (req, res) => {
     console.log("Checking Server Test page");
+    console.log(`Cookie-Session:`);
+    console.log(req.session);
     var payload = `Testing Server connection! [TIME: ${getDateTime()}]`
-    res.send(payload);
+    res.status(200).send(payload);
 });
 
 app.get("/", (req, res) => {
@@ -344,7 +368,6 @@ app.post("/drivers", (req, res) => {
 // User Log in handling
 app.post("/login", async (req, res) => {
     console.log(`Logging in a user on Server side [TIME: ${getDateTime()}]`);
-    
     var payload = {
         error: false,
         message: "",
@@ -418,8 +441,17 @@ app.post("/login", async (req, res) => {
     }
 
     console.log(payload.message)
+    req.session.payload = payload
+    req.session.save()
     return res.status(201).send(payload)
 
+});
+
+//Logout handling
+app.get('/logout', function(req, res){
+    req.session.destroy();
+    console.log("Logout on the server side");
+    res.status(201).send("Logged out..");
 });
 
 // Capture unimplemented routes.
@@ -432,7 +464,9 @@ app.get('*', function(req, res){
 // Run the application
 //====================
 
+
 app.listen(port, host);
+
 
 // Run MongoDB
 connectMongoDB().catch(console.error);

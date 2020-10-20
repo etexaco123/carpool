@@ -59,6 +59,9 @@ export default {
             this.payload.isLoggedIn = true
             this.payload.userData = this.serverResponse.data
             this.$emit('dologin', this.payload)
+            setTimeout(() => {
+                this.$router.push({name: 'Home'});
+                },3000);
           }
         })
         .catch(error => {

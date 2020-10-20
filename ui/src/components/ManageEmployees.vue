@@ -8,69 +8,69 @@
   <div id="addDriverInfo" v-if="registrationType.name=='Driver'">
     <form>
       <span><label> Employee ID </label></span>
-      <input type="text" v-model.lazy="driver.employee_id" required />
+      <input type="text" :disabled=isInputDisabled v-model.lazy="driver.employee_id" required />
       <br>
       <span><label> First Name </label></span>
-      <input type="text" v-model.lazy="driver.first_name" required />
+      <input type="text" :disabled=isInputDisabled v-model.lazy="driver.first_name" required />
       <br>
       <span><label> Last Name </label></span>
-      <input type="text" v-model.lazy="driver.last_name" required />
+      <input type="text" :disabled=isInputDisabled v-model.lazy="driver.last_name" required />
       <br>
       <span><label> Car Make </label></span>
-      <input type="text" v-model.lazy="driver.car_make" required />
+      <input type="text" :disabled=isInputDisabled v-model.lazy="driver.car_make" required />
       <br>
       <span><label> Car Image ID </label></span>
-      <input type="text" v-model.lazy="driver.car_image_id" required />
+      <input type="text" :disabled=isInputDisabled v-model.lazy="driver.car_image_id" required />
       <br>
 
-      <button @click.prevent="postDriver"> Add {{ registrationType.name }} </button>
+      <button :disabled=isInputDisabled @click.prevent="postDriver"> Add {{ registrationType.name }} </button>
     </form>
   </div>
   
   <div id="addEmployeeInfo" v-if="registrationType.name=='Employee'">
     <form>
       <label> Employee ID </label>
-      <input type="text" v-model.lazy="employee.employee_id" required />
+      <input type="text" :disabled=isInputDisabled v-model.lazy="employee.employee_id" required />
       <br>
       <label> First Name </label>
-      <input type="text" v-model.lazy="employee.first_name" required />
+      <input type="text" :disabled=isInputDisabled v-model.lazy="employee.first_name" required />
       <br>
       <label> Last Name </label>
-      <input type="text" v-model.lazy="employee.last_name" required />
+      <input type="text" :disabled=isInputDisabled v-model.lazy="employee.last_name" required />
       <br>
       <label> Address </label>
-      <input type="text" v-model.lazy="employee.address" required />
+      <input type="text" :disabled=isInputDisabled v-model.lazy="employee.address" required />
       <br>
       <label> Job Title </label>
-      <input type="text" v-model.lazy="employee.job_title" required />
+      <input type="text" :disabled=isInputDisabled v-model.lazy="employee.job_title" required />
       <br>
       <label> E-mail </label>
-      <input type="text" v-model.lazy="employee.email" required />
+      <input type="text" :disabled=isInputDisabled v-model.lazy="employee.email" required />
       <br>
       <label> Age </label>
-      <input type="text" v-model.lazy="employee.age" required />
+      <input type="text" :disabled=isInputDisabled v-model.lazy="employee.age" required />
       <br>
       <label> Driver License </label>
-      <input type="text" v-model.lazy="employee.is_driver" required />
+      <input type="text" :disabled=isInputDisabled v-model.lazy="employee.is_driver" required />
       <br>
 
-      <button @click.prevent="postUser"> Add {{ registrationType.name }} </button>
+      <button :disabled=isInputDisabled @click.prevent="postUser"> Add {{ registrationType.name }} </button>
     </form>
   </div>
   
   <div id="addEmployeeInfo" v-if="registrationType.name=='User'">
     <form>
       <label> Employee ID </label>
-      <input type="text" v-model.lazy="user.employee_id" required />
+      <input type="text" :disabled=isInputDisabled v-model.lazy="user.employee_id" required />
       <br>
       <label> Password </label>
-      <input type="password" v-model.lazy="user.password" required />
+      <input type="password" :disabled=isInputDisabled v-model.lazy="user.password" required />
       <br>
       <label id="roleLabel"> Role </label>
       <dropdown id="dropDownRoleSelection" v-bind:options="roles" :selected="role" @updateoption="selectRole"></dropdown>
       <br>
 
-      <button @click.prevent="postUser"> Add {{ registrationType.name }} </button>
+      <button :disabled=isInputDisabled @click.prevent="postUser"> Add {{ registrationType.name }} </button>
     </form>
   </div>
 
@@ -115,6 +115,7 @@ export default {
 
       serverResponse: "",
       showServerResponse: false,
+      isInputDisabled: false,
 
       // Props for the Dropdown component
       registrationTypes: [
@@ -140,39 +141,20 @@ export default {
   methods: {
     postDriver: function() {
       this.postData("drivers", this.driver)
-      this.driver = {
-        employee_id: "",
-        first_name: "",
-        last_name: "",
-        car_make: "",
-        car_image_id: ""
-      }
     },
     postEmployee: function() {
       this.postData("employees", this.employee)
-      this.employee = {
-        employee_id: "",
-        first_name: "",
-        last_name: "",
-        address: "",
-        job_title: "",
-        email: "",
-        age: "",
-        is_driver: ""
-      }
     },
     postUser: function() {
       this.postData("users", this.user)
-      this.user = {
-        employee_id: "",
-        password: "",
-        role: ""
-      }
     },
     postData: function(type, data) {
       const server_host = process.env.VUE_APP_SERVER_HOST || '127.0.0.1';
       const server_port = process.env.VUE_APP_SERVER_PORT || '5050';
       const server_url = `http://${server_host}:${server_port}/${type}`
+
+      // Temporarily disable the input fields
+      this.isInputDisabled = true;
 
       axios.post(server_url, data)
         .then(response => {
@@ -187,6 +169,12 @@ export default {
         })
         .finally(() => {
           this.showServerResponse = true
+
+          // clear the input fields
+          this.clearData()
+
+          // Temporarily disable the input fields
+          this.isInputDisabled = false;
         })
     },
     selectRegistrationType(payload) {
@@ -195,6 +183,30 @@ export default {
     selectRole(payload) {
       this.role = payload;
       this.user.role = payload.name;
+    },
+    clearData() {
+      this.driver = {
+        employee_id: "",
+        first_name: "",
+        last_name: "",
+        car_make: "",
+        car_image_id: ""
+      }
+      this.employee = {
+        employee_id: "",
+        first_name: "",
+        last_name: "",
+        address: "",
+        job_title: "",
+        email: "",
+        age: "",
+        is_driver: ""
+      }
+      this.user = {
+        employee_id: "",
+        password: "",
+        role: ""
+      }
     }
   }
 }

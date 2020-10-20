@@ -5,7 +5,7 @@
     <form>
       <label> WebSocket Connection: </label>
       <input type="text" v-model.lazy="url" placeholder="ws://localhost:5050/chat" required />
-      <input type="text" v-model.lazy="name" placeholder="John" required />
+      <input type="text" v-model.lazy="name" :placeholder=getName() required />
     </form>
     <button @click.prevent="connectWebSocket"> Connect </button>
   </div>
@@ -28,10 +28,14 @@
 
 <script>
 export default {
+  props: {
+    isLoggedIn: Boolean,
+    userData: Object
+  },
   data() {
     return {
       default_url: "ws://localhost:5050/chat",
-      default_name: "John",
+      default_name: "Anonymous",
       client_id: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
       url: "",
       name: "",
@@ -42,6 +46,24 @@ export default {
     }
   },
   methods: {
+    getName() {
+      var placeholder = ""
+      if (this.userData) {
+        if ("first_name" in this.userData && this.userData.first_name != "") {
+          placeholder += this.userData.first_name + " "
+        }
+        if ("last_name" in this.userData && this.userData.last_name != "") {
+          placeholder += this.userData.last_name
+        }
+      }
+
+      // If the placeholder is still empty, use the default name
+      if (placeholder == "") {
+        placeholder = this.default_name
+      }
+
+      return placeholder
+    },
     connectWebSocket: function() {
       console.log("Starting connection to WebSocket Server...")
       if (!this.url) {
@@ -49,8 +71,8 @@ export default {
         this.url = this.default_url
       }
       if (!this.name) {
-        console.log(`Empty Name, using default: ${this.default_name}`)
-        this.name = this.default_name
+        console.log(`Empty Name, using default: ${this.getName()}`)
+        this.name = this.getName()
       }
       this.connection = new WebSocket(this.url)
 

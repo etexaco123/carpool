@@ -234,7 +234,7 @@ app.get("/users", (req, res) => {
         return res.status(500).send('No DB connection!');
     } else if(mongoose.connection.readyState == 2 || 
               mongoose.connection.readyState == 3) {
-        return res.status(503).send('MongoDB connection is yet initialized. Try again in a few moments. ');
+        return res.status(503).send('MongoDB connection is not yet initialized. Try again in a few moments. ');
     }
 
     // Retrieve the documents as quick as possible, use "lean"
@@ -249,7 +249,7 @@ app.get("/employees", (req, res) => {
         return res.status(500).send('No DB connection!');
     } else if(mongoose.connection.readyState == 2 || 
               mongoose.connection.readyState == 3) {
-        return res.status(503).send('MongoDB connection is yet initialized. Try again in a few moments. ');
+        return res.status(503).send('MongoDB connection is not yet initialized. Try again in a few moments. ');
     }
 
     // Retrieve the documents as quick as possible, use "lean"
@@ -264,7 +264,7 @@ app.get("/drivers", (req, res) => {
         return res.status(500).send('No MongoDB connection!');
     } else if(mongoose.connection.readyState == 2 || 
               mongoose.connection.readyState == 3) {
-        return res.status(503).send('MongoDB connection is yet initialized. Try again in a few moments. ');
+        return res.status(503).send('MongoDB connection is not yet initialized. Try again in a few moments. ');
     }
 
     // Retrieve the documents as quick as possible, use "lean"
@@ -298,7 +298,7 @@ app.post("/users", (req, res) => {
         return res.status(500).send('No DB connection!');
     } else if(mongoose.connection.readyState == 2 || 
               mongoose.connection.readyState == 3) {
-        return res.status(503).send('MongoDB connection is yet initialized. Try again in a few moments. ');
+        return res.status(503).send('MongoDB connection is not yet initialized. Try again in a few moments. ');
     }
 
     const user = new Users({
@@ -320,7 +320,7 @@ app.post("/employees", (req, res) => {
         return res.status(500).send('No DB connection!');
     } else if(mongoose.connection.readyState == 2 || 
               mongoose.connection.readyState == 3) {
-        return res.status(503).send('MongoDB connection is yet initialized. Try again in a few moments. ');
+        return res.status(503).send('MongoDB connection is not yet initialized. Try again in a few moments. ');
     }
 
     const employee = new Employees({
@@ -346,7 +346,7 @@ app.post("/drivers", (req, res) => {
         return res.status(500).send('No DB connection!');
     } else if(mongoose.connection.readyState == 2 || 
               mongoose.connection.readyState == 3) {
-        return res.status(503).send('MongoDB connection is yet initialized. Try again in a few moments. ');
+        return res.status(503).send('MongoDB connection is not yet initialized. Try again in a few moments. ');
     }
 
     const driver = new Drivers({
@@ -380,7 +380,7 @@ app.post("/login", async (req, res) => {
         return res.status(500).send(payload);
     } else if(mongoose.connection.readyState == 2 ||
               mongoose.connection.readyState == 3) {
-        payload.message = "MongoDB connection is yet initialized. Try again in a few moments."
+        payload.message = "MongoDB connection is not yet initialized. Try again in a few moments."
         payload.error = true
         return res.status(503).send(payload);
     }

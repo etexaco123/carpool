@@ -43,7 +43,8 @@ const host = process.env.HOST || DEFAULT_HOST;
 //SESSION related constants
 const SESSION_NAME = 'sid';
 const ONE_HOUR = 1000 * 60 * 60;
-const SESSION_LIFETIME = new Date(Date.now() + ONE_HOUR);
+//const SESSION_LIFETIME = new Date(Date.now() + ONE_HOUR);
+const SESSION_LIFETIME = ONE_HOUR;
 const SESSION_SECRET =  'wacc-grp6';
 
 const cassandradbKeyspace = process.env.CASSANDRADB_KEYSPACE || DEFAULT_CASSANDRADB_KEYSPACE
@@ -51,7 +52,7 @@ const cassandradbKeyspace = process.env.CASSANDRADB_KEYSPACE || DEFAULT_CASSANDR
 // Mongodb setup
 async function connectMongoDB() {
     console.log(`Trying to connect to MongoDB ...`);
-        
+
     const mongodbHost = process.env.MONGODB_HOST || DEFAULT_MONGODB_HOST
     const mongodbPort = process.env.MONGODB_PORT || DEFAULT_MONGODB_PORT
     const mongodbName = process.env.MONGODB_NAME || DEFAULT_MONGODB_NAME
@@ -224,7 +225,7 @@ app.get("/test", (req, res) => {
 
 app.get("/", (req, res) => {
     console.log("Checking Server root page");
-    res.render("home");
+    res.status(200).send(`Server's HOME page`);
 });
 
 // Routes to retrieve users data from the MongoDB

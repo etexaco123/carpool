@@ -1,0 +1,98 @@
+version: "3.7"
+
+services:
+  mongodb-seed:
+    image: docker.io/bitnami/mongodb:4.4-debian-10
+    environment:
+      MONGODB_ADVERTISED_HOSTNAME: mongodb-seed
+      MONGODB_REPLICA_SET_NAME: wacc-rs
+      MONGODB_REPLICA_SET_MODE: primary
+      MONGODB_ROOT_PASSWORD: rootpass
+      MONGODB_REPLICA_SET_KEY: rootpass
+    ports:
+      - 27017
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+    volumes:
+      - mongodb-seed-data:/bitnami/mongodb
+      - mongodb-schema:/schema
+      - mongodb-mock-data:/mock-data
+    networks:
+      - wacc-network-overlay
+
+  mongodb-secondary-1:
+    image: docker.io/bitnami/mongodb:4.4-debian-10
+    environment:
+      MONGODB_ADVERTISED_HOSTNAME: mongodb-secondary-1
+      MONGODB_REPLICA_SET_NAME: wacc-rs
+      MONGODB_REPLICA_SET_MODE: secondary
+      MONGODB_INITIAL_PRIMARY_HOST: mongodb-seed
+      MONGODB_PRIMARY_PORT_NUMBER: 27017
+      MONGODB_INITIAL_PRIMARY_ROOT_PASSWORD: rootpass
+      MONGODB_REPLICA_SET_KEY: rootpass
+    ports:
+      - 27017
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+    depends_on:
+      - mongodb-seed
+    networks:
+      - wacc-network-overlay
+
+  mongodb-secondary-2:
+    image: docker.io/bitnami/mongodb:4.4-debian-10
+    environment:
+      MONGODB_ADVERTISED_HOSTNAME: mongodb-secondary-2
+      MONGODB_REPLICA_SET_NAME: wacc-rs
+      MONGODB_REPLICA_SET_MODE: secondary
+      MONGODB_INITIAL_PRIMARY_HOST: mongodb-seed
+      MONGODB_PRIMARY_PORT_NUMBER: 27017
+      MONGODB_INITIAL_PRIMARY_ROOT_PASSWORD: rootpass
+      MONGODB_REPLICA_SET_KEY: rootpass
+    ports:
+      - 27017
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+    depends_on:
+      - mongodb-seed
+    networks:
+      - wacc-network-overlay
+
+  mongodb-arbiter:
+    image: docker.io/bitnami/mongodb:4.4-debian-10
+    environment:
+      MONGODB_ADVERTISED_HOSTNAME: mongodb-arbiter
+      MONGODB_REPLICA_SET_NAME: wacc-rs
+      MONGODB_REPLICA_SET_MODE: arbiter
+      MONGODB_INITIAL_PRIMARY_HOST: mongodb-seed
+      MONGODB_PRIMARY_PORT_NUMBER: 27017
+      MONGODB_INITIAL_PRIMARY_ROOT_PASSWORD: rootpass
+      MONGODB_REPLICA_SET_KEY: rootpass
+    ports:
+      - 27017
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+    depends_on:
+      - mongodb-seed
+    networks:
+      - wacc-network-overlay
+
+volumes:
+  mongodb-schema:
+    external: true
+  mongodb-mock-data:
+    external: true
+  mongodb-seed-data:
+    external: true
+
+networks:
+  wacc-network-overlay:
+    external: true

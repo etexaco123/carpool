@@ -1,0 +1,29 @@
+version: "3.7"
+
+services:
+  ui: 
+    hostname: ui
+    image: ui
+    env_file: ./../ui/.env
+    command: "nginx -g 'daemon off;'"
+    deploy:
+      replicas: 3
+      restart_policy:
+        delay: 5s
+        condition: on-failure
+        max_attempts: 3
+        window: 20s
+    volumes:
+      - nginx-conf:/etc/nginx/conf.d
+    ports:
+      - 8080:80
+    networks:
+      - wacc-network-overlay
+
+volumes:
+  nginx-conf:
+    external: true
+
+networks:
+  wacc-network-overlay:
+    external: true

@@ -6,6 +6,7 @@ MY_DIR=$(dirname $(readlink -f $0))
 
 # Create the network
 docker network create wacc-network
+docker network create --driver overlay --attachable wacc-network-overlay
 
 # Create the volumes
 $MY_DIR/utils/volumes/create-volumes.sh

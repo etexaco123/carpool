@@ -1,0 +1,22 @@
+version: "3.7"
+
+services:
+  cqlsh:
+    image: cassandra:latest
+    container_name: cqlsh
+    entrypoint: cqlsh cassandra-seed
+    volumes:
+      - cassandra-schema:/schema
+      - cassandra-historical-data:/historical-data
+    networks:
+      - wacc-network-overlay
+
+volumes:
+  cassandra-schema:
+    external: true
+  cassandra-historical-data:
+    external: true
+
+networks:
+  wacc-network-overlay:
+    external: true

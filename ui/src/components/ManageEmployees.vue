@@ -50,8 +50,8 @@
       <label> Age </label>
       <input type="text" :disabled=isInputDisabled v-model.lazy="employee.age" required />
       <br>
-      <label> Driver License </label>
-      <input type="text" :disabled=isInputDisabled v-model.lazy="employee.is_driver" required />
+      <label id="isDriverLabel"> Driver License </label>
+      <dropdown id="dropDownIsDriverSelection" v-bind:options="isDriverOptions" :selected="isDriver" @updateoption="selectIsDriver"></dropdown>
       <br>
 
       <button :disabled=isInputDisabled @click.prevent="postEmployee"> Add {{ registrationType.name }} </button>
@@ -132,6 +132,13 @@ export default {
       ],
       role: {
         name: "Select Role"
+      },
+      isDriverOptions: [
+        {name: "False"},
+        {name: "True"},
+      ],
+      isDriver: {
+        name: "Driver's license?"
       }
     }
   },
@@ -184,6 +191,10 @@ export default {
       this.role = payload;
       this.user.role = payload.name;
     },
+    selectIsDriver(payload) {
+      this.isDriver = payload;
+      this.employee.is_driver = payload.name.toLowerCase();
+    },
     clearData() {
       this.driver = {
         employee_id: "",
@@ -222,6 +233,11 @@ export default {
   margin-bottom: 20px;
   margin-right:10px;
 }
+#dropDownIsDriverSelection {
+  margin-top: 0px;
+  margin-bottom: 20px;
+  margin-right:30px;
+}
 #addEmployeeInfo * {
   box-sizing: border-box;
 }
@@ -247,6 +263,9 @@ label {
 }
 #roleLabel {
   margin-right: 40px;
+}
+#isDriverLabel {
+  margin-right: 60px;
 }
 input[type="text"], textarea {
   display: inline-block;

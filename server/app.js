@@ -232,10 +232,14 @@ app.get("/", (req, res) => {
 app.get("/users", (req, res) => {
     console.log(`Fetching Users on the Server side [TIME: ${getDateTime()}]`);
     if (mongoose.connection.readyState == 0) {
-        return res.status(500).send('No DB connection!');
+        const msg = 'No DB connection!'
+        console.log(msg);
+        return res.status(500).send(msg);
     } else if(mongoose.connection.readyState == 2 || 
               mongoose.connection.readyState == 3) {
-        return res.status(503).send('MongoDB connection is not yet initialized. Try again in a few moments. ');
+        const msg = 'MongoDB connection is not yet initialized. Try again in a few moments.'
+        console.log(msg);
+        return res.status(503).send(msg);
     }
 
     // Retrieve the documents as quick as possible, use "lean"
@@ -247,10 +251,14 @@ app.get("/users", (req, res) => {
 app.get("/employees", (req, res) => {
     console.log(`Fetching Employees on the Server side [TIME: ${getDateTime()}]`);
     if (mongoose.connection.readyState == 0) {
-        return res.status(500).send('No DB connection!');
+        const msg = 'No DB connection!'
+        console.log(msg);
+        return res.status(500).send(msg);
     } else if(mongoose.connection.readyState == 2 || 
               mongoose.connection.readyState == 3) {
-        return res.status(503).send('MongoDB connection is not yet initialized. Try again in a few moments. ');
+        const msg = 'MongoDB connection is not yet initialized. Try again in a few moments.'
+        console.log(msg);
+        return res.status(503).send(msg);
     }
 
     // Retrieve the documents as quick as possible, use "lean"
@@ -262,10 +270,14 @@ app.get("/employees", (req, res) => {
 app.get("/drivers", (req, res) => {
     console.log(`Fetching Drivers on the Server side [TIME: ${getDateTime()}]`);
     if (mongoose.connection.readyState == 0) {
-        return res.status(500).send('No MongoDB connection!');
+        const msg = 'No DB connection!'
+        console.log(msg);
+        return res.status(500).send(msg);
     } else if(mongoose.connection.readyState == 2 || 
               mongoose.connection.readyState == 3) {
-        return res.status(503).send('MongoDB connection is not yet initialized. Try again in a few moments. ');
+        const msg = 'MongoDB connection is not yet initialized. Try again in a few moments.'
+        console.log(msg);
+        return res.status(503).send(msg);
     }
 
     // Retrieve the documents as quick as possible, use "lean"
@@ -296,10 +308,14 @@ app.get("/locations", (req, res) => {
 app.post("/users", (req, res) => {
     console.log("Server: Registering user...");
     if (mongoose.connection.readyState == 0) {
-        return res.status(500).send('No DB connection!');
+        const msg = 'No DB connection!'
+        console.log(msg);
+        return res.status(500).send(msg);
     } else if(mongoose.connection.readyState == 2 || 
               mongoose.connection.readyState == 3) {
-        return res.status(503).send('MongoDB connection is not yet initialized. Try again in a few moments. ');
+        const msg = 'MongoDB connection is not yet initialized. Try again in a few moments.'
+        console.log(msg);
+        return res.status(503).send(msg);
     }
 
     const user = new Users({
@@ -308,7 +324,10 @@ app.post("/users", (req, res) => {
         role: req.body.role
     });
     user.save((err) => {
-        if (err) return res.status(500).send(err);
+        if (err) {
+            console.log(`Server ERROR: ${err}`)
+            return res.status(500).send(err);
+        }
     });
 
     var message = `User ${user.employee_id} created successfully! (Role: ${user.role})`
@@ -318,10 +337,14 @@ app.post("/users", (req, res) => {
 app.post("/employees", (req, res) => {
     console.log("Server: Registering employee...");
     if (mongoose.connection.readyState == 0) {
-        return res.status(500).send('No DB connection!');
+        const msg = 'No DB connection!'
+        console.log(msg);
+        return res.status(500).send(msg);
     } else if(mongoose.connection.readyState == 2 || 
               mongoose.connection.readyState == 3) {
-        return res.status(503).send('MongoDB connection is not yet initialized. Try again in a few moments. ');
+        const msg = 'MongoDB connection is not yet initialized. Try again in a few moments.'
+        console.log(msg);
+        return res.status(503).send(msg);
     }
 
     const employee = new Employees({
@@ -330,11 +353,15 @@ app.post("/employees", (req, res) => {
         last_name: req.body.last_name,
         address: req.body.address,
         job_title: req.body.job_title,
+        email: req.body.email,
         age: req.body.age,
-        is_driver: req.body.is_driver
+        is_driver: req.body.is_driver === true || req.body.is_driver === 'true'
     });
     employee.save((err) => {
-        if (err) return res.status(500).send(err);
+        if (err) {
+            console.log(`Server ERROR: ${err}`)
+            return res.status(500).send(err);
+        }
         console.log(`... Employee added successfully`);
     });
 
@@ -344,10 +371,14 @@ app.post("/employees", (req, res) => {
 app.post("/drivers", (req, res) => {
     console.log("Server: Registering driver...");
     if (mongoose.connection.readyState == 0) {
-        return res.status(500).send('No DB connection!');
+        const msg = 'No DB connection!'
+        console.log(msg);
+        return res.status(500).send(msg);
     } else if(mongoose.connection.readyState == 2 || 
               mongoose.connection.readyState == 3) {
-        return res.status(503).send('MongoDB connection is not yet initialized. Try again in a few moments. ');
+        const msg = 'MongoDB connection is not yet initialized. Try again in a few moments.'
+        console.log(msg);
+        return res.status(503).send(msg);
     }
 
     const driver = new Drivers({
@@ -358,11 +389,14 @@ app.post("/drivers", (req, res) => {
         car_image_id: req.body.car_image_id
     });
     driver.save((err) => {
-        if (err) return res.status(500).send(err);
-        console.log(`... Driver added successfully`);
+        if (err) {
+            console.log(`Server ERROR: ${err}`)
+            return res.status(500).send(err);
+        }
     });
 
     var message = `Driver ${driver.employee_id} added successfully!`
+    console.log(message);
     return res.status(201).send(message)
 });
 
@@ -376,14 +410,14 @@ app.post("/login", async (req, res) => {
     }
     
     if (mongoose.connection.readyState == 0) {
-        payload.message = "No MongoDB connection!"
-        payload.error = true
-        return res.status(500).send(payload);
-    } else if(mongoose.connection.readyState == 2 ||
+        const msg = 'No DB connection!'
+        console.log(msg);
+        return res.status(500).send(msg);
+    } else if(mongoose.connection.readyState == 2 || 
               mongoose.connection.readyState == 3) {
-        payload.message = "MongoDB connection is not yet initialized. Try again in a few moments."
-        payload.error = true
-        return res.status(503).send(payload);
+        const msg = 'MongoDB connection is not yet initialized. Try again in a few moments.'
+        console.log(msg);
+        return res.status(503).send(msg);
     }
 
     try{

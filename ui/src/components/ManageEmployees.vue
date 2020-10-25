@@ -54,7 +54,7 @@
       <input type="text" :disabled=isInputDisabled v-model.lazy="employee.is_driver" required />
       <br>
 
-      <button :disabled=isInputDisabled @click.prevent="postUser"> Add {{ registrationType.name }} </button>
+      <button :disabled=isInputDisabled @click.prevent="postEmployee"> Add {{ registrationType.name }} </button>
     </form>
   </div>
   

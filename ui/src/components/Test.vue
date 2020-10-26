@@ -4,8 +4,8 @@
   <div id="test">
     <form>
       <label> URL: </label>
-      <input type="text" v-model.lazy="url" placeholder="http://localhost:5050/test" required />
-      <button @click.prevent="testServer"> Test </button>
+      <input type="text" :disabled=isInputDisabled v-model.lazy="url" placeholder="http://localhost:5050/test" required />
+      <button :disabled=isInputDisabled @click.prevent="testServer"> Test </button>
     </form>
   </div>
 
@@ -26,7 +26,8 @@ export default {
       default_url: "http://localhost:5050/test",
       url: "",
       serverResponse: "",
-      showServerResponse: false
+      showServerResponse: false,
+      isInputDisabled: false
     }
   },
   methods: {
@@ -35,6 +36,11 @@ export default {
         console.log(`Empty URL, using default: ${this.default_url}`)
         this.url = this.default_url
       }
+
+      // Temporarily disable the input fields
+      this.isInputDisabled = true;
+      this.serverResponse = ""
+
       axios.get(this.url)
         .then(response => {
           this.serverResponse = response.data
@@ -48,6 +54,9 @@ export default {
         })
         .finally(() => {
           this.showServerResponse = true
+
+          // re-enable the input fields
+          this.isInputDisabled = false;
         })
     }
   }

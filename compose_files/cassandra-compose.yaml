@@ -1,0 +1,84 @@
+version: "3.7"
+
+services:
+  cassandra-seed:
+    image: cassandra:latest
+    environment:
+      CASSANDRA_BROADCAST_ADDRESS: cassandra-seed
+      ## By default, Cassandra autodetects the available host memory and takes as much as it can.
+      ## Therefore, memory options are mandatory if multiple Cassandras are launched in the same node.
+      MAX_HEAP_SIZE: 500M
+      HEAP_NEWSIZE: 100M
+    volumes:
+      - cassandra-data-seed:/var/lib/cassandra
+    ports:
+      - 9042:9042 # cqlsh
+      - 7199:7199 # jmx
+      - 7000:7000 # internode communcation
+      - 7001:7001 # tls internode
+      - 9160:9160 # client api
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+    networks:
+      - wacc-network-overlay
+
+  cassandra-1:
+    image: cassandra:latest
+    environment:
+      CASSANDRA_BROADCAST_ADDRESS: cassandra-1
+      CASSANDRA_SEEDS: cassandra-seed
+      ## By default, Cassandra autodetects the available host memory and takes as much as it can.
+      ## Therefore, memory options are mandatory if multiple Cassandras are launched in the same node.
+      MAX_HEAP_SIZE: 500M
+      HEAP_NEWSIZE: 100M
+    volumes:
+      - cassandra-data-1:/var/lib/cassandra
+    ports:
+      - 7000
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+    depends_on:
+      - cassandra-seed
+    networks:
+      - wacc-network-overlay
+
+  cassandra-2:
+    image: cassandra:latest
+    hostname: cassandra-2
+    environment:
+      CASSANDRA_BROADCAST_ADDRESS: cassandra-2
+      CASSANDRA_SEEDS: cassandra-seed
+      ## By default, Cassandra autodetects the available host memory and takes as much as it can.
+      ## Therefore, memory options are mandatory if multiple Cassandras are launched in the same node.
+      MAX_HEAP_SIZE: 500M
+      HEAP_NEWSIZE: 100M
+    volumes:
+      - cassandra-data-2:/var/lib/cassandra
+    ports:
+      - 7000
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+    depends_on:
+      - cassandra-seed
+    networks:
+      - wacc-network-overlay
+
+volumes:
+  cassandra-data-seed:
+    external: true
+  cassandra-data-1:
+    external: true
+  cassandra-data-2:
+    external: true
+
+networks:
+  wacc-network:
+    external: true
+  wacc-network-overlay:
+    external: true

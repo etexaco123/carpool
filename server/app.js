@@ -1,6 +1,8 @@
 'use strict';
 
+const { TIMEOUT } = require("dns");
 const   express 				    = require("express")
+        , session                   = require("express-session")
         , enableWs                  = require('express-ws')
         , http                      = require("http")
         , url                       = require("url")
@@ -38,12 +40,19 @@ const DEFAULT_CASSANDRADB_DATACENTER = `datacenter1`;
 const port = process.env.PORT || DEFAULT_PORT;
 const host = process.env.HOST || DEFAULT_HOST;
 
+//SESSION related constants
+const SESSION_NAME = 'sid';
+const ONE_HOUR = 1000 * 60 * 60;
+//const SESSION_LIFETIME = new Date(Date.now() + ONE_HOUR);
+const SESSION_LIFETIME = ONE_HOUR;
+const SESSION_SECRET =  'wacc-grp6';
+
 const cassandradbKeyspace = process.env.CASSANDRADB_KEYSPACE || DEFAULT_CASSANDRADB_KEYSPACE
 
 // Mongodb setup
 async function connectMongoDB() {
     console.log(`Trying to connect to MongoDB ...`);
-        
+
     const mongodbHost = process.env.MONGODB_HOST || DEFAULT_MONGODB_HOST
     const mongodbPort = process.env.MONGODB_PORT || DEFAULT_MONGODB_PORT
     const mongodbName = process.env.MONGODB_NAME || DEFAULT_MONGODB_NAME
@@ -96,22 +105,36 @@ async function connectCassandraDB() {
 function getDateTime() {
     return new Date().toISOString().replace('T', ' ').substr(0, 19);
 }
+   
 
 
 //run express
 var app = express();
 // Cors
-app.use(cors());
+app.use(cors({
+    origin: [
+        'http://localhost:8080',
+        'https://localhost:8080'
+      ],
+      credentials: true,
+      exposedHeaders: ['set-cookie']
+}));
 //Needed to be able to run contents of public dir like css file
 app.use(express.static("public"));
 //Needed for posting data into a request
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 //required method to use express-session
-app.use(require("express-session")({
-    secret: "group6 is the best",
+app.use(session({
+    name: SESSION_NAME,
+    secret: SESSION_SECRET,
     resave: false,
-    saveUninitialized: false
+    saveUninitialized: false,
+    cookie: {
+        maxAge: SESSION_LIFETIME,
+        sameSite: true,
+        secure: false
+    }
 }));
 
 // Enable websockets
@@ -194,22 +217,29 @@ app.ws('/chat', (ws, req) => {
 // This is a test route using for checking the connection between Server and UI.
 app.get("/test", (req, res) => {
     console.log("Checking Server Test page");
+    console.log(`Cookie-Session:`);
+    console.log(req.session);
     var payload = `Testing Server connection! [TIME: ${getDateTime()}]`
-    res.send(payload);
+    res.status(200).send(payload);
 });
 
 app.get("/", (req, res) => {
     console.log("Checking Server root page");
-    res.render("home");
+    res.status(200).send(`Server's HOME page`);
 });
 
+// Routes to retrieve users data from the MongoDB
 app.get("/users", (req, res) => {
     console.log(`Fetching Users on the Server side [TIME: ${getDateTime()}]`);
     if (mongoose.connection.readyState == 0) {
-        return res.status(500).send('No DB connection!');
+        const msg = 'No DB connection!'
+        console.log(msg);
+        return res.status(500).send(msg);
     } else if(mongoose.connection.readyState == 2 || 
               mongoose.connection.readyState == 3) {
-        return res.status(503).send('MongoDB connection is yet initialized. Try again in a few moments. ');
+        const msg = 'MongoDB connection is not yet initialized. Try again in a few moments.'
+        console.log(msg);
+        return res.status(503).send(msg);
     }
 
     // Retrieve the documents as quick as possible, use "lean"
@@ -218,14 +248,17 @@ app.get("/users", (req, res) => {
         res.status(200).send(users)
     });
 });
-
 app.get("/employees", (req, res) => {
     console.log(`Fetching Employees on the Server side [TIME: ${getDateTime()}]`);
     if (mongoose.connection.readyState == 0) {
-        return res.status(500).send('No DB connection!');
+        const msg = 'No DB connection!'
+        console.log(msg);
+        return res.status(500).send(msg);
     } else if(mongoose.connection.readyState == 2 || 
               mongoose.connection.readyState == 3) {
-        return res.status(503).send('MongoDB connection is yet initialized. Try again in a few moments. ');
+        const msg = 'MongoDB connection is not yet initialized. Try again in a few moments.'
+        console.log(msg);
+        return res.status(503).send(msg);
     }
 
     // Retrieve the documents as quick as possible, use "lean"
@@ -234,14 +267,17 @@ app.get("/employees", (req, res) => {
         res.status(200).send(employees)
     })
 });
-
 app.get("/drivers", (req, res) => {
     console.log(`Fetching Drivers on the Server side [TIME: ${getDateTime()}]`);
     if (mongoose.connection.readyState == 0) {
-        return res.status(500).send('No MongoDB connection!');
+        const msg = 'No DB connection!'
+        console.log(msg);
+        return res.status(500).send(msg);
     } else if(mongoose.connection.readyState == 2 || 
               mongoose.connection.readyState == 3) {
-        return res.status(503).send('MongoDB connection is yet initialized. Try again in a few moments. ');
+        const msg = 'MongoDB connection is not yet initialized. Try again in a few moments.'
+        console.log(msg);
+        return res.status(503).send(msg);
     }
 
     // Retrieve the documents as quick as possible, use "lean"
@@ -268,36 +304,47 @@ app.get("/locations", (req, res) => {
         });
 });
 
-//User Sign Up handling
-app.post("/register", (req, res) => {
-    console.log("Server: Registering...");
+// Register users data
+app.post("/users", (req, res) => {
+    console.log("Server: Registering user...");
     if (mongoose.connection.readyState == 0) {
-        return res.status(500).send('No DB connection!');
+        const msg = 'No DB connection!'
+        console.log(msg);
+        return res.status(500).send(msg);
     } else if(mongoose.connection.readyState == 2 || 
               mongoose.connection.readyState == 3) {
-        return res.status(503).send('MongoDB connection is yet initialized. Try again in a few moments. ');
+        const msg = 'MongoDB connection is not yet initialized. Try again in a few moments.'
+        console.log(msg);
+        return res.status(503).send(msg);
     }
 
     const user = new Users({
         employee_id: req.body.employee_id,
-        password: req.body.password
+        password: req.body.password,
+        role: req.body.role
     });
     user.save((err) => {
-        console.log(`Inserting data into Mongodb ...`);
-        if (err) return res.status(500).send(err);
-        console.log(`... User added successfully`);
+        if (err) {
+            console.log(`Server ERROR: ${err}`)
+            return res.status(500).send(err);
+        }
     });
 
-    var message = `User ${user.employee_id} created successfully!`
-    res.status(201).send(message)
+    var message = `User ${user.employee_id} created successfully! (Role: ${user.role})`
+    console.log(message);
+    return res.status(201).send(message)
 });
 app.post("/employees", (req, res) => {
-    console.log("Server: Registering...");
+    console.log("Server: Registering employee...");
     if (mongoose.connection.readyState == 0) {
-        return res.status(500).send('No DB connection!');
+        const msg = 'No DB connection!'
+        console.log(msg);
+        return res.status(500).send(msg);
     } else if(mongoose.connection.readyState == 2 || 
               mongoose.connection.readyState == 3) {
-        return res.status(503).send('MongoDB connection is yet initialized. Try again in a few moments. ');
+        const msg = 'MongoDB connection is not yet initialized. Try again in a few moments.'
+        console.log(msg);
+        return res.status(503).send(msg);
     }
 
     const employee = new Employees({
@@ -306,51 +353,155 @@ app.post("/employees", (req, res) => {
         last_name: req.body.last_name,
         address: req.body.address,
         job_title: req.body.job_title,
+        email: req.body.email,
         age: req.body.age,
-        driver_license: req.body.driver_license
+        is_driver: req.body.is_driver === true || req.body.is_driver === 'true'
     });
     employee.save((err) => {
-        console.log(`Inserting data into Mongodb ...`);
-        if (err) return res.status(500).send(err);
+        if (err) {
+            console.log(`Server ERROR: ${err}`)
+            return res.status(500).send(err);
+        }
         console.log(`... Employee added successfully`);
     });
 
     var message = `Employee ${employee.employee_id} added successfully!`
-    res.status(201).send(message)
+    return res.status(201).send(message)
 });
 app.post("/drivers", (req, res) => {
-    console.log("Server: Registering...");
+    console.log("Server: Registering driver...");
     if (mongoose.connection.readyState == 0) {
-        return res.status(500).send('No DB connection!');
+        const msg = 'No DB connection!'
+        console.log(msg);
+        return res.status(500).send(msg);
     } else if(mongoose.connection.readyState == 2 || 
               mongoose.connection.readyState == 3) {
-        return res.status(503).send('MongoDB connection is yet initialized. Try again in a few moments. ');
+        const msg = 'MongoDB connection is not yet initialized. Try again in a few moments.'
+        console.log(msg);
+        return res.status(503).send(msg);
     }
 
     const driver = new Drivers({
         employee_id: req.body.employee_id,
         first_name: req.body.first_name,
         last_name: req.body.last_name,
-        car_model: req.body.car_model,
+        car_make: req.body.car_make,
         car_image_id: req.body.car_image_id
     });
     driver.save((err) => {
-        console.log(`Inserting data into Mongodb ...`);
-        if (err) return res.status(500).send(err);
-        console.log(`... Driver added successfully`);
+        if (err) {
+            console.log(`Server ERROR: ${err}`)
+            return res.status(500).send(err);
+        }
     });
 
     var message = `Driver ${driver.employee_id} added successfully!`
-    res.status(201).send(message)
+    console.log(message);
+    return res.status(201).send(message)
+});
+
+// User Log in handling
+app.post("/login", async (req, res) => {
+    console.log(`Logging in a user on Server side [TIME: ${getDateTime()}]`);
+    var payload = {
+        error: false,
+        message: "",
+        data: {}
+    }
+    
+    if (mongoose.connection.readyState == 0) {
+        const msg = 'No DB connection!'
+        console.log(msg);
+        return res.status(500).send(msg);
+    } else if(mongoose.connection.readyState == 2 || 
+              mongoose.connection.readyState == 3) {
+        const msg = 'MongoDB connection is not yet initialized. Try again in a few moments.'
+        console.log(msg);
+        return res.status(503).send(msg);
+    }
+
+    try{
+        const {employee_id, password} = req.body
+        const user = await Users.findOne({
+            employee_id: employee_id,
+            password: password
+        })
+        if (!user) {
+            payload.message = "Incorrect login information";
+            payload.error = true
+            return res.status(403).send(payload)
+        }
+        payload.message = `User ${user.employee_id} logged in successfully! (Role: ${user.role})`
+        payload.data.employee_id = user.employee_id
+        //payload.data.password = user.password  // Don't send the password as payload!
+        payload.data.role = user.role
+
+        // Fetch the user's data from the Employees and Drivers db's
+        const employee = await Employees.findOne({
+            employee_id: payload.data.employee_id
+        })
+        if (!employee) {
+            // Return current data
+            console.log(`No employee information for user: ${payload.data.employee_id}`)
+            return res.status(201).send(payload)
+        }
+        payload.data.first_name = employee.first_name
+        payload.data.last_name = employee.last_name
+        payload.data.address = employee.address
+        payload.data.job_title = employee.job_title
+        payload.data.email = employee.email
+        payload.data.age = employee.age
+        payload.data.is_driver = employee.is_driver
+
+        // Check if the employee is also a driver
+        if ("is_driver" in payload.data)
+        {
+            const driver = await Drivers.findOne({
+                employee_id: payload.data.employee_id
+            })
+            if (!driver) {
+                // Return current data
+                console.log(`No driver information for user ${payload.data.employee_id}`)
+                return res.status(201).send(payload)
+            }
+            payload.data.car_make = driver.car_make
+            payload.data.car_image_id = driver.car_image_id
+        } else {
+            console.log(`User ${payload.data.employee_id} is not a driver!`)
+        }
+    } catch (err) {
+        payload.error = true
+        payload.message = "An error has occured trying to log in"
+        return res.status(500).send(payload)
+    }
+
+    console.log(payload.message)
+    req.session.payload = payload
+    req.session.save()
+    return res.status(201).send(payload)
+
+});
+
+//Logout handling
+app.get('/logout', function(req, res){
+    req.session.destroy();
+    console.log("Logout on the server side");
+    res.status(201).send("Logged out..");
+});
+
+// Capture unimplemented routes.
+app.get('*', function(req, res){
+    res.status(404).send('Page does not exist!');
 });
 
 
+//====================
+// Run the application
+//====================
 
-//====================
-// Run the applicatin
-//====================
 
 app.listen(port, host);
+
 
 // Run MongoDB
 connectMongoDB().catch(console.error);

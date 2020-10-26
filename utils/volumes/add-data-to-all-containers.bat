@@ -11,3 +11,6 @@ call .\utils\volumes\add-data-to-1-container.bat -v mongodb-schema -s .\conf\mon
 
 :: Copy the Mongodb mock data files.
 call .\utils\volumes\add-data-to-1-container.bat -v mongodb-mock-data -s .\conf\mongodb\mock-data\.
+
+:: Copy the Nginx conf.
+call .\utils\volumes\add-data-to-1-container.bat -v nginx-conf -s .\conf\nginx\.

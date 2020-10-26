@@ -1,23 +1,23 @@
 <template>
 <div>
 
-  <div id="login">
+  <div id="login" v-if="!payload.isLoggedIn">
     <form>
       <label> Employee ID: </label>
-      <input type="text" v-model.lazy="employee_id" required />
+      <input type="text" :disabled=isInputDisabled v-model.lazy="employee_id" required />
       <label> Password: </label>
-      <input type="text" v-model.lazy="password" required />
-      <div id="checkboxes">
-        <label> Stay logged in </label>
-        <input type="checkbox" value="true" v-model="stayloggedin" />
-      </div>
-      <button @click.prevent="postLogin"> Log in </button>
+      <input type="password" :disabled=isInputDisabled v-model.lazy="password" required />
+      <button :disabled=isInputDisabled @click.prevent="postLogin"> Log in </button>
     </form>
+  </div>
+
+  <div v-if="payload.isLoggedIn">
+    <h3> Redirecting Home ... </h3>
   </div>
 
   <div id="resultArea" v-if="this.showServerResponse">
     <label id="resultLabel"> Result: </label>
-    <p id="serverResponse"> {{ serverResponse }} </p>
+    <p id="serverResponse"> {{ serverResponse.message }} </p>
   </div>
 
 </div>
@@ -31,9 +31,17 @@ export default {
     return {
       employee_id: "",
       password: "",
-      serverResponse: "",
+      isInputDisabled: false,
+      serverResponse: {
+        error: false,
+        message: "",
+        data: {}
+      },
       showServerResponse: false,
-      stayloggedin: false
+      payload: {
+        isLoggedIn: false,
+        userData: {}
+      }
     }
   },
   methods: {
@@ -42,23 +50,40 @@ export default {
       const server_port = process.env.VUE_APP_SERVER_PORT || '5050';
       const server_url = `http://${server_host}:${server_port}/login`
 
+      // Temporarily disable the input fields
+      this.isInputDisabled = true;
+
       axios.post(server_url, {
         employee_id: this.employee_id,
-        password: this.password
+        password: this.password        
       })
         .then(response => {
           this.serverResponse = response.data
-          console.log(this.stayloggedin);
+          if (!this.serverResponse.error) {
+            this.payload.isLoggedIn = true
+            this.payload.userData = this.serverResponse.data
+            this.$emit('dologin', this.payload)
+            setTimeout(() => {
+                this.$router.push({name: 'Home'});
+                },3000);
+          }
         })
         .catch(error => {
           if (!error.response) {
-            this.serverResponse = error.message
+              this.serverResponse.message = error.message
           } else {
             this.serverResponse = error.response.data
           }
         })
-        .finally(() => {
-          this.showServerResponse = true
+        .finally(() => {          
+          this.showServerResponse = true;
+
+          // Clear up the fields
+          this.employee_id = ""
+          this.password = ""
+
+          // re-enable the input fields
+          this.isInputDisabled = false;
         })
     }
   }
@@ -84,6 +109,11 @@ input[type="text"], textarea {
   width: 100%;
   padding: 8px;
 }
+input[type="password"], textarea {
+  display: block;
+  width: 100%;
+  padding: 8px;
+}
 #checkboxes {
   margin-top: 20px;
 }
@@ -97,7 +127,7 @@ input[type="text"], textarea {
   margin-right: 10px;
 }
 button {
-  margin-top: 10px;
+  margin-top: 20px;
   margin-bottom: 20px;
   padding: 10px;
 }
@@ -111,6 +141,12 @@ button {
 #resultLabel {
   text-align: center;
   font-weight: bold;
+}
+h3{
+  display: block;
+  margin-top: 50px;
+  margin-bottom: 100px;
+  color: #fc8;
 }
 
 </style>

@@ -14,5 +14,12 @@ db.Drivers.insertMany([
 		last_name:"Smith2",
 		car_make: "BMW",
 		car_image_id: "image2"
+	},
+	{
+		employee_id:"admin",
+		first_name:"admin",
+		last_name:"admin",
+		car_make: "BMW",
+		car_image_id: "imageAdmin"
 	}
 ]);

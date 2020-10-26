@@ -7,17 +7,16 @@
   </div>
 
   <div id="nav">
-    <router-link to="/">Home</router-link> |
-    <router-link to="/test">Test</router-link> |
-    <router-link to="/register">Register</router-link> |
-    <router-link to="/login">Login</router-link> |
-    <router-link to="/manageEmployees">Manage Employees</router-link> |
-    <router-link to="/chat">Chat</router-link> |
-    <router-link to="/search">Search</router-link> |
-    <router-link to="/logout">Logout</router-link>
+    <span> <router-link to="/" exact>Home</router-link> | </span>
+    <span> <router-link to="/test" exact>Test Server</router-link> | </span>
+    <span v-if="!isLoggedIn"> <router-link to="/login" exact>Login</router-link> | </span>
+    <span v-if="isLoggedIn && isAdmin"> <router-link to="/manageEmployees" exact>Manage Employees</router-link> | </span>
+    <span v-if="isLoggedIn"> <router-link to="/chat" exact>Chat</router-link> | </span>
+    <span v-if="isLoggedIn"> <router-link to="/search" exact>Search</router-link> | </span>
+    <span v-if="isLoggedIn"> <router-link @click="logout" to="/logout" exact>Logout</router-link> </span>
   </div>
 
-  <router-view v-slot="{ Component }">
+  <router-view v-slot="{ Component }" v-bind:userData="userData" v-bind:isLoggedIn="isLoggedIn" @dologin="login($event)" @dologout="logout">
     <component :is="Component" />
   </router-view>
 
@@ -37,7 +36,6 @@
 import Header from './components/Header.vue'
 import Home from './components/Home.vue'
 import Test from './components/Test.vue'
-import Register from './components/Register.vue'
 import ManageEmployees from './components/ManageEmployees.vue'
 import Login from './components/Login.vue'
 import Logout from './components/Logout.vue'
@@ -50,7 +48,6 @@ export default {
     'app-header': Header,
     'app-home': Home,
     'app-test': Test,
-    'app-register': Register,
     'app-manage-employees': ManageEmployees,
     'app-login': Login,
     'app-logout': Logout,
@@ -68,7 +65,10 @@ export default {
       toggle: true,
       toggle2: false,
       response: "",
-      isResponseShowable: false
+      isResponseShowable: false,
+      isLoggedIn: false,
+      isAdmin: false,
+      userData: {}
     }
   },
   methods: {
@@ -87,6 +87,15 @@ export default {
         this.subtitle = this.subtitle_wacc
 
       this.toggle2 = !this.toggle2
+    },
+    login: function (payload) {
+      this.isLoggedIn = true
+      this.userData = payload.userData
+      this.isAdmin = ( this.userData.role == "Admin" ? true : false );
+    },
+    logout: function () {
+      this.isLoggedIn = false
+      this.isAdmin = false
     }
   }
 }
@@ -118,11 +127,8 @@ body {
   margin-top: 10px;
   margin-bottom: 10px;
 }
-h1 {
-  color: red;
-}
 #subtitle {
-  color: #b85;
+  color: #fc8;
   margin: 20px;
 }
 #nav {

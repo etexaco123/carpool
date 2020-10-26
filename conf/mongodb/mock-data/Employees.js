@@ -9,7 +9,7 @@ db.Employees.insertMany([
 		job_title:"Software Engineer",
 		email:"john.smith@gmail.com",
 		age:25,
-		driver_license:true
+		is_driver:true
 	},
 	{
 		employee_id:"2",
@@ -19,7 +19,7 @@ db.Employees.insertMany([
 		job_title:"Software Engineer",
 		email:"john.smith2@gmail.com",
 		age:25,
-		driver_license:true
+		is_driver:true
 	},
 	{
 		employee_id:"3",
@@ -29,7 +29,7 @@ db.Employees.insertMany([
 		job_title:"Software Engineer",
 		email:"john.smith3@gmail.com",
 		age:25,
-		driver_license:false
+		is_driver:false
 	},
 	{
 		employee_id:"4",
@@ -39,7 +39,7 @@ db.Employees.insertMany([
 		job_title:"Software Engineer",
 		email:"john.smith4@gmail.com",
 		age:25,
-		driver_license:false
+		is_driver:false
 	},
 	{
 		employee_id:"5",
@@ -49,6 +49,16 @@ db.Employees.insertMany([
 		job_title:"Software Engineer",
 		email:"john.smith5@gmail.com",
 		age:25,
-		driver_license:false
+		is_driver:false
+	},
+	{
+		employee_id: "admin",
+		first_name:"admin",
+		last_name:"admin",
+		address:"Groningen",
+		job_title:"IT Administrator",
+		email:"admin.admin@gmail.com",
+		age:25,
+		is_driver:true
 	}
 ]);

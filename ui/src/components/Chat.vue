@@ -1,16 +1,16 @@
 <template>
 <div>
 
-  <div id="chatConnect" v-if="!connection">
+  <div id="chatConnect" v-if="!isConnectionActive()">
     <form>
       <label> WebSocket Connection: </label>
-      <input type="text" v-model.lazy="url" placeholder="ws://localhost:5050/chat" required />
-      <input type="text" v-model.lazy="name" placeholder="John" required />
+      <input type="text" :disabled=isInputDisabled v-model.lazy="url" placeholder="ws://localhost:5050/chat" required />
+      <input type="text" :disabled=isInputDisabled v-model.lazy="name" :placeholder=getName() required />
     </form>
-    <button @click.prevent="connectWebSocket"> Connect </button>
+    <button :disabled=isInputDisabled @click.prevent="connectWebSocket"> Connect </button>
   </div>
 
-  <div id="chatMessage" v-if="!!connection">
+  <div id="chatMessage" v-if="isConnectionActive()">
     <textarea readonly id="chatArea" v-model="chatArea" rows=20 resize=none> Something </textarea>
     <input type="text" v-model.lazy="message" placeholder="Say something ..." required />
     <button @click.prevent="sendMessage"> Send message </button>
@@ -28,31 +28,58 @@
 
 <script>
 export default {
+  props: {
+    isLoggedIn: Boolean,
+    userData: Object
+  },
   data() {
     return {
       default_url: "ws://localhost:5050/chat",
-      default_name: "John",
+      default_name: "Anonymous",
       client_id: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
       url: "",
       name: "",
       message: "",
       chatArea: "",
       serverResponseWS: "",
+      isInputDisabled: false,
       connection: null
     }
   },
   methods: {
-    connectWebSocket: function() {
+    getName() {
+      var placeholder = ""
+      if (this.userData) {
+        if ("first_name" in this.userData && this.userData.first_name != "") {
+          placeholder += this.userData.first_name + " "
+        }
+        if ("last_name" in this.userData && this.userData.last_name != "") {
+          placeholder += this.userData.last_name
+        }
+      }
+
+      // If the placeholder is still empty, use the default name
+      if (placeholder == "") {
+        placeholder = this.default_name
+      }
+
+      return placeholder
+    },
+    connectWebSocket() {
       console.log("Starting connection to WebSocket Server...")
       if (!this.url) {
         console.log(`Empty URL, using default: ${this.default_url}`)
         this.url = this.default_url
       }
       if (!this.name) {
-        console.log(`Empty Name, using default: ${this.default_name}`)
-        this.name = this.default_name
+        console.log(`Empty Name, using default: ${this.getName()}`)
+        this.name = this.getName()
       }
+
       this.connection = new WebSocket(this.url)
+
+      // Disable input until event is triggered
+      this.isInputDisabled = true
 
       // Connection handlers
       this.connection.onopen = () => {
@@ -61,6 +88,9 @@ export default {
         
         // Send initial connection message
         this.sendConnect();
+
+        // Re-enable input after event was triggered
+        this.isInputDisabled = false
       }
       this.connection.onmessage = (event) => {
         const { name, msg } = JSON.parse(event.data)
@@ -68,25 +98,41 @@ export default {
         this.serverResponseWS = `${msg} (${name})`
         this.chatArea += name + ': ' + msg + '\n' 
       }
-      this.connection.onerror = (event) => {
-        console.log(`Websocket error`)
-        console.log(event)
+      this.connection.onerror = () => {
+        const msg = `Websocket error: Connection inactive`
+        this.serverResponseWS = msg
+        console.log(msg)
+
+        // Re-enable input after event was triggered and clear input
+        this.isInputDisabled = false
+        this.clearInput()
       }
       this.connection.onclose = () => {
         console.log(`Server Websocket closed`)
+
+        // Re-enable input after event was triggered and clear input
+        this.isInputDisabled = false
+        this.clearInput()
       }
     },
-    sendConnect: function() {
+    isConnectionActive() {
+      return this.connection && this.connection.readyState == 1
+    },
+    clearInput() {
+      this.name = ""
+      this.url = ""
+    },
+    sendConnect() {
       this.sendBase("connect", false);
     },
-    sendMessage: function() {
+    sendMessage() {
       if (this.message) {
         this.sendBase("message", true);
         this.message = ""
       }
     },
-    sendBase: function(type, showMessage) {
-      if (!this.connection) {
+    sendBase(type, showMessage) {
+      if (!this.isConnectionActive) {
         console.log(`ERROR: Could not send message type [${type}] because connection is down!`);
         return false;
       }

@@ -1,0 +1,23 @@
+version: "3.7"
+
+services:
+  server:
+    hostname: server
+    image: server
+    env_file: ./../server/.env
+    command: "node app.js"
+    deploy:
+      replicas: 3
+      restart_policy:
+        delay: 5s
+        condition: on-failure
+        max_attempts: 3
+        window: 20s
+    ports:
+      - 5050:5050
+    networks:
+      - wacc-network-overlay
+
+networks:
+  wacc-network-overlay:
+    external: true
